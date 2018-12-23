@@ -213,16 +213,6 @@ mysql> GRANT FILE ON *.* TO gcn@localhost;
 
 ### glade_2.3_RA_Dec.npy
 The `pygcn` code uses a reduced version of the catalog, stored in `.npy` format.
-`wisegcn` already includes version 2.3 of the catalog as a zip file. In order to use it, unzip the `./catalog/glade_2.3_RA_Dec.npy` file, and point to it in the `config.ini` file:
-
-```
-[CATALOG]
-PATH = /path/to/catalog/
-NAME = glade_2.3_RA_Dec
-```
-
-Alternatively, you can create the `.npy` file yourself:
-
 To create it, first export the selected columns to a `.csv` file:
 ```
 mysql> SELECT glade_id, ra0, dec0, ifnull(dist, -1), ifnull(bmag, 0)

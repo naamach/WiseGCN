@@ -1,6 +1,6 @@
 import gcn.notice_types
 from astropy.utils.data import download_file
-import os
+import shutil
 import ntpath
 from wisegcn.email_alert import send_mail
 from wisegcn import galaxy_list
@@ -86,7 +86,7 @@ def process_gcn(payload, root):
     # Download the HEALPix sky map FITS file.
     tmp_path = download_file(params['skymap_fits'])
     skymap_path = fits_path + filename + "_" + ntpath.basename(params['skymap_fits'])
-    os.rename(tmp_path, skymap_path)
+    shutil.move(tmp_path, skymap_path)
 
     # Create the galaxy list
     galaxies = galaxy_list.find_galaxy_list(skymap_path)
