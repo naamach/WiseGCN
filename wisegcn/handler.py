@@ -81,7 +81,7 @@ def process_gcn(payload, root):
     try:
         send_mail(subject="[GW@Wise] LVC alert received",
                   text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
-                  files=filename+'.xml')
+                  files=[filename+'.xml'])
     except:
         print("Failed to sent email!")
         pass
