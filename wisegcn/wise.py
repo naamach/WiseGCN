@@ -8,7 +8,7 @@ from wisegcn.email_alert import send_mail
 
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
-
+is_debug = config.getboolean('GENERAL', 'DEBUG')
 
 def process_galaxy_list(galaxies, filename='galaxies'):
     """Get the full galaxy list, and find which are good to observe at Wise"""
@@ -63,6 +63,9 @@ def process_galaxy_list(galaxies, filename='galaxies'):
                 print("Writing plan for GladeID {:.0f}: RA {}, Dec {}...".format(galaxies[i, 0],
                                                                                  ra.to_string(unit=u.degree, decimal=True),
                                                                                  dec.to_string(unit=u.degree, decimal=True, alwayssign=True)))
+                if is_debug:
+                    print(galaxies[i, :])
+
                 rtml.add_target(root,
                                 request_id=filename,
                                 ra=ra.to_string(unit=u.degree, decimal=True),
