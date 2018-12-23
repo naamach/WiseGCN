@@ -100,7 +100,7 @@ def find_galaxy_list(skymap_path, airmass_threshold = airmass_thresholdp, comple
 
 
     # if no galaxies
-    if (galax[np.intersect1d(indcredzone,inddistance)]).size == 0:
+    if (galax[np.intersect1d(indcredzone, inddistance)]).size == 0:
         while probsum < 0.99995:
             if sortedprob.size == 0:
                 break
@@ -210,8 +210,8 @@ def find_galaxy_list(skymap_path, airmass_threshold = airmass_thresholdp, comple
         galaxylist[i, :] = [galax[ind, 0], galax[ind, 1], galax[ind, 2], galax[ind, 3], galax[ind, 4],
                             (p * luminosityNorm / normalization)[ind], distanceFactor[ind]]
         lvc_galaxy_dict = {'voeventid': '(SELECT MAX(id) from voevent_lvc)',
-        'score': (p * luminosityNorm / normalization)[ind],
-        'gladeid': galax[ind, 0]}
+                           'score': (p * luminosityNorm / normalization)[ind],
+                           'gladeid': galax[ind, 0]}
         mysql_update.insert_values('lvc_galaxies', lvc_galaxy_dict)
     
     return galaxylist  # , stats

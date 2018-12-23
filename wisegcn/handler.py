@@ -83,7 +83,7 @@ def process_gcn(payload, root):
                   text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
                   files=[filename+'.xml'])
     except:
-        print("Failed to sent email!")
+        print("Failed to send email!")
         pass
 
     # Download the HEALPix sky map FITS file.
