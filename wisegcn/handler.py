@@ -75,6 +75,7 @@ def process_gcn(payload, root):
     mysql_update.insert_voevent('voevent_lvc', params)
 
     # Send alert email
+    print("GCN/LVC alert {} received, started processing.".format(ivorn))
     try:
         send_mail(subject="[GW@Wise] LVC alert received",
                   text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),

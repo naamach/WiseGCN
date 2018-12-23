@@ -60,7 +60,9 @@ def process_galaxy_list(galaxies, filename='galaxies'):
                                        airmass_max=config.getfloat(telescopes[tel], 'AIRMASS_MAX'))
             if is_observe:
                 nothing_to_observe = False
-                print("Writing plan for GladeID {:.0f}...".format(galaxies[i, 0]))
+                print("Writing plan for GladeID {:.0f}: RA {}, Dec {}...".format(galaxies[i, 0],
+                                                                                 ra.to_string(unit=u.degree, decimal=True),
+                                                                                 dec.to_string(unit=u.degree, decimal=True, alwayssign=True)))
                 rtml.add_target(root,
                                 request_id=filename,
                                 ra=ra.to_string(unit=u.degree, decimal=True),

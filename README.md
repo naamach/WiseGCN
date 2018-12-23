@@ -98,10 +98,13 @@ $ netstat -ln | grep mysql
 To listen and process public events run:
 
 ```
-from wisegcn import handler
+import gcn
+from wisegcn.handler import process_gcn
 
-handler()
+gcn.listen(handler=process_gcn)
 ```
+
+This will listen for VOEvents until killed with ctrl+C.
 
 ### Testing `wisegcn` offline
 
