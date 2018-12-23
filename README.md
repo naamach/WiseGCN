@@ -29,6 +29,9 @@ To do so, you will need to have a `config.ini` file in the working directory (th
 The file should look like that (see `config.ini.example` in the main directory):
 ```
 ; config.ini
+[GENERAL]
+DEBUG = True
+
 [CATALOG]
 PATH = /path/to/catalog/
 NAME = glade_2.3_RA_Dec

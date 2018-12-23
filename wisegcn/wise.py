@@ -8,7 +8,7 @@ from wisegcn.email_alert import send_mail
 
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
-is_debug = config.getboolean('GENERAL', 'DEBUG')
+is_debug = config.getboolean('GENERAL', 'DEBUG') if config.has_option('GENERAL', 'DEBUG') else False
 
 def process_galaxy_list(galaxies, filename='galaxies'):
     """Get the full galaxy list, and find which are good to observe at Wise"""
@@ -48,6 +48,7 @@ def process_galaxy_list(galaxies, filename='galaxies'):
                                 hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
 
         for i in range(tel, galaxies.shape[0], len(telescopes)):
+            print("Checking GladeID {:.0f}".format(galaxies[i, 0]))
             ra = Angle(galaxies[i, 1] * u.deg)
             dec = Angle(galaxies[i, 2] * u.deg)
             is_observe = is_observable(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,

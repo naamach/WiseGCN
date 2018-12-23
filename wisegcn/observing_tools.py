@@ -26,6 +26,7 @@ def next_night(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
 
 def calc_airmass(ra, dec, lat, lon, alt, t=Time.now()):
     obs = EarthLocation(lat=lat, lon=lon, height=alt)
+    print("{}, {}".format(ra, dec))
     obj = SkyCoord(ra=ra, dec=dec, frame='icrs')
     obj_altaz = obj.transform_to(AltAz(obstime=t, location=obs))
     airmass = obj_altaz.secz
