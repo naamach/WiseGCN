@@ -93,7 +93,3 @@ def process_gcn(payload, root):
 
     # Create Wise plan
     wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1])
-
-
-# Listen for VOEvents until killed with Control-C
-gcn.listen(handler=process_gcn)
