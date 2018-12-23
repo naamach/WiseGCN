@@ -30,6 +30,7 @@ The file should look like that (see `config.ini.example` in the main directory):
 ```
 ; config.ini
 [GENERAL]
+TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
 DEBUG = True ; True - print more details
 
 [CATALOG]

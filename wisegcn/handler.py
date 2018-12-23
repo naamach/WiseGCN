@@ -13,6 +13,7 @@ config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 fits_path = config.get('EVENT FILES', 'PATH')  # event FITS file path
+is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', 'TEST') else False
 
 
 # Function to call every time a GCN is received.
@@ -23,13 +24,14 @@ fits_path = config.get('EVENT FILES', 'PATH')  # event FITS file path
     gcn.notice_types.LVC_INITIAL,
     gcn.notice_types.LVC_UPDATE)
 def process_gcn(payload, root):
-    # Respond only to 'test' events.
-    # VERY IMPORTANT! Replace with the following code
-    # to respond to only real 'observation' events.
-    # if root.attrib['role'] != 'observation':
-    #    return
-    if root.attrib['role'] != 'test':
-        print('Not test, aborting.')
+    # Respond only to 'test'/'observation' events
+    if is_test:
+        role = 'test'
+    else:
+        role = 'observation'
+
+    if root.attrib['role'] != role:
+        print('Not {}, aborting.'.format(role))
         return
 
     v = vp.loads(payload)

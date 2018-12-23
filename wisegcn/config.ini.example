@@ -1,6 +1,7 @@
 ; config.ini
 [GENERAL]
-DEBUG = True
+TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
+DEBUG = True ; True - print more details
 
 [CATALOG]
 PATH = /path/to/catalog/
