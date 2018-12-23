@@ -14,27 +14,26 @@ config.read('config.ini')
 cat_file = config.get('CATALOG', 'PATH')+config.get('CATALOG', 'NAME')+'.npy'  # galaxy catalog file
 
 # parameters:
-credzone = 0.99
-nsigmas_in_d = 3
-airmass_thresholdp = 10
-completenessp = 0.5
-minGalaxies = 100
+credzone = config.getfloat('GALAXIES', 'CREDZONE')
+nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')
+completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
+minGalaxies = config.getfloat('GALAXIES', 'MINGALAXIES')
 
 # magnitude of event in r-band. values are value from barnes... +-1.5 mag
-minmag = -12.
-maxmag = -17.
-sensitivity = 22
+minmag = config.getfloat('GALAXIES', 'MINMAG')
+maxmag = config.getfloat('GALAXIES', 'MAXMAG')
+sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')
 
-mindistFactor = 0.01  # reflecting a small chance that the theory is completely wrong and we can still see something
+mindistFactor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
 
 minL = mag.f_nu_from_magAB(minmag)
 maxL = mag.f_nu_from_magAB(maxmag)
 
 # Schecter function parameters:
-alpha = -1.07
-MB_star = -20.7  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
+alpha = config.getfloat('GALAXIES', 'ALPHA')
+MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
 
-def find_galaxy_list(skymap_path, airmass_threshold = airmass_thresholdp, completeness = completenessp, credzone = 0.99):
+def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99):
     # Read the HEALPix sky map:
     try:
         prob, distmu, distsigma, distnorm = hp.read_map(skymap_path, field=None, verbose=False)
