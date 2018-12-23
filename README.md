@@ -54,6 +54,18 @@ SOCKET = /var/run/mysqld/mysqld.sock
 [EVENT FILES]
 PATH = /path/to/ligoevent_fits/
 
+[GALAXIES]
+CREDZONE = 0.99
+NSIGMAS_IN_D = 3
+COMPLETENESS = 0.5
+MINGALAXIES = 100
+MINMAG = -12 ; magnitude of event in r-band
+MAXMAG = -17 ; magnitude of event in r-band
+SENSITIVITY = 22
+MINDISTFACTOR = 0.01 ; reflecting a small chance that the theory is completely wrong and we can still see something
+ALPHA = -1.07 ; Schecter function parameters
+MB_STAR = -20.7 ; Schecter function parameters, random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
+
 [OBSERVING]
 SUN_ALT_MAX = -12
 BESTEFFORTS = 1
