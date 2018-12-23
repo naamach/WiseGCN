@@ -30,7 +30,7 @@ The file should look like that (see `config.ini.example` in the main directory):
 ```
 ; config.ini
 [GENERAL]
-DEBUG = True
+DEBUG = True ; True - print more details
 
 [CATALOG]
 PATH = /path/to/catalog/
@@ -111,14 +111,13 @@ This will listen for VOEvents until killed with ctrl+C.
 
 ### Testing `wisegcn` offline
 
-To test `wisegcn` offline, first download the sample GCN notice and localization map:
+To test `wisegcn` offline, first download the sample GCN notice:
 
 ```
 $ curl -O https://emfollow.docs.ligo.org/userguide/_static/MS181101ab-1-Preliminary.xml
-$ curl -O https://emfollow.docs.ligo.org/userguide/_static/bayestar.fits.gz
 ```
 
-Save the FITS file in the folder specified in the `config.ini` file (EVENT FILES/PATH). Then run:
+Then run:
 
 ```
 from wisegcn.handler import process_gcn
