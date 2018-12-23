@@ -1,4 +1,4 @@
-# wisegcn
+# WiseGCN
 
 A GCN/TAN (Gamma-ray Coordinates Network/Transient Astronomy Network) handler for use at the Wise Observatory in case of gravitational-wave alerts.
 
@@ -28,7 +28,6 @@ Finally, you will have to provide `wisegcn` with the database credentials and po
 To do so, you will need to have a `config.ini` file in the working directory (the directory from which you run the script).
 The file should look like that (see `config.ini.example` in the main directory):
 ```
-; config.ini
 ; config.ini
 [CATALOG]
 PATH = /path/to/catalog/

@@ -73,6 +73,8 @@ mysql> CREATE TABLE `voevent_lvc` (
 
 ### voevent_amon table
 
+NOTE: No need to create the `voevent_amon` table for this version of the pipeline (no ICECUBE events).
+
 This table will be used to store the ranked galaxies for each recieved ICECUBE event. To create it, run in `mysql`:
 ```
 mysql> CREATE TABLE `voevent_amon` (
@@ -137,7 +139,8 @@ then try again to create the table.
 
 ## Catalog table
 
-`pygcn` uses the [Glade](http://aquarius.elte.hu/glade/) (Galaxy List for the Advanced Detector Era) catalog to find all possible host galaxies and rank them.
+`wisegcn` uses the [Glade](http://aquarius.elte.hu/glade/) (Galaxy List for the Advanced Detector Era) catalog to find all possible host galaxies and rank them.
+
 First, download the lateset version of the catalog in text format: [Glade v2.3](http://aquarius.elte.hu/glade/GLADE_2.3.txt).
 
 ### glade_catalog table
@@ -209,7 +212,18 @@ mysql> GRANT FILE ON *.* TO gcn@localhost;
 ```
 
 ### glade_2.3_RA_Dec.npy
-The `pygcn` code uses a reduced version of the catalog, stored in `npy` format. To create it, first export the selected columns to a `csv` file:
+The `pygcn` code uses a reduced version of the catalog, stored in `.npy` format.
+`wisegcn` already includes version 2.3 of the catalog as a zip file. In order to use it, unzip the `./catalog/glade_2.3_RA_Dec.npy` file, and point to it in the `config.ini` file:
+
+```
+[CATALOG]
+PATH = /path/to/catalog/
+NAME = glade_2.3_RA_Dec
+```
+
+Alternatively, you can create the `.npy` file yourself:
+
+To create it, first export the selected columns to a `.csv` file:
 ```
 mysql> SELECT glade_id, ra0, dec0, ifnull(dist, -1), ifnull(bmag, 0)
 	FROM glade_catalog
