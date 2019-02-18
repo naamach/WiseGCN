@@ -3,4 +3,5 @@ import gcn
 from wisegcn.handler import process_gcn
 
 # Listen for GCN notices (until interrupted or killed)
+print("Listening to GCN notices (press Ctrl+C to kill)...")
 gcn.listen(handler=process_gcn)

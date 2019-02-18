@@ -19,5 +19,6 @@ setup(name='wisegcn',
           'Programming Language :: Python',
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Text Processing :: Markup :: XML'
-      ]
+      ],
+      scripts=['bin/wisegcn-listen']
       )
