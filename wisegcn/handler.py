@@ -75,34 +75,29 @@ def process_gcn(payload, root):
         description = description + ", " + item
     params['how_description'] = description
 
-    # Is retracted?
-    if "Retraction" not in ivorn:
-        params['Retraction'] = 0
-    else:
-        params['Retraction'] = 1
-
     # Insert VOEvent to the database
     mysql_update.insert_voevent('voevent_lvc', params)
 
-    # Send alert email
-    if params['Retraction'] == 0:
-        try:
-            send_mail(subject="[GW@Wise] LVC alert received",
-                      text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
-                      files=[alerts_path+filename+'.xml'])
-        except:
-            print("Failed to send email!")
-            pass
-    else:
+    # Is retracted?
+    if params['Packet_Type'] == 164:
         print("Event retracted, doing nothing.")
         try:
             send_mail(subject="[GW@Wise] LVC event retracted",
                       text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
-                      files=[alerts_path+filename+'.xml'])
+                      files=[alerts_path + filename + '.xml'])
         except:
             print("Failed to send email!")
             pass
         return
+
+    # Send alert email
+    try:
+        send_mail(subject="[GW@Wise] LVC alert received",
+                  text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
+                  files=[alerts_path+filename+'.xml'])
+    except:
+        print("Failed to send email!")
+        pass
 
     # Download the HEALPix sky map FITS file.
     tmp_path = download_file(params['skymap_fits'])
