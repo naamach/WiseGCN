@@ -112,7 +112,7 @@ $ netstat -ln | grep mysql
 
 ## Using `wisegcn`
 
-To listen and process public events run:
+To listen and process public events run (while the `gw` `conda` environment is activated):
 
 
 ```
@@ -145,7 +145,7 @@ Then run:
 $ wisegcn_localtest
 ```
 
-Alternativey, from inside `python` run:
+Alternativey, from inside `python` run (while the `gw` `conda` environment is activated):
 
 ```
 from wisegcn.handler import process_gcn
