@@ -200,7 +200,7 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99)
 
     # creating sorted galaxy list, containing info. each entry is (glade_id, RA, DEC, distance(Mpc), Bmag, score, distance factor(between 0-1))
     # score is normalized so that all the galaxies in the field sum to 1 (before luminosity cutoff)
-    galaxylist = np.ndarray((ngalaxtoshow, 7))
+    galaxylist = np.ndarray((n, 7))
 
     # adding to galaxy table database
     for i in range(ii.shape[0])[:n]:
