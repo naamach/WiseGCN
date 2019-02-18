@@ -16,7 +16,13 @@ def insert_values(table, dict_to_insert):
     vals = [str(dict_to_insert[key]) for key in keys]
     query = 'INSERT INTO {} (`{}`) VALUES ({});'.format(table, '`, `'.join(keys), ', '.join('{}'.format('"{}"'.format(v) if "SELECT" not in v else v) for v in vals))
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    cursor.execute(query)
+    try:
+        cursor.execute(query)
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+        print("Failed to insert values into table {}.".format(table))
+        print("Error code = {}".format(code))
+        print(msg)
     conn.commit()
     cursor.close()
 

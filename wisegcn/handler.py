@@ -12,6 +12,7 @@ import voeventparse as vp
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
+alerts_path = config.get('ALERT FILES', 'PATH')  # event alert file path
 fits_path = config.get('EVENT FILES', 'PATH')  # event FITS file path
 is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', 'TEST') else False
 
@@ -50,8 +51,9 @@ def process_gcn(payload, root):
     # Save alert to file
     ivorn = v.attrib['ivorn']
     filename = ntpath.basename(ivorn).split('#')[1]
-    with open(filename+'.xml', "wb") as f:
+    with open(alerts_path+filename+'.xml', "wb") as f:
         f.write(payload)
+    print("GCN/LVC alert {} received, started processing.".format(ivorn))
 
     # Read VOEvent attributes
     keylist = ['ivorn', 'role', 'version']
@@ -73,18 +75,34 @@ def process_gcn(payload, root):
         description = description + ", " + item
     params['how_description'] = description
 
+    # Is retracted?
+    if "Retraction" not in ivorn:
+        params['Retraction'] = 0
+    else:
+        params['Retraction'] = 1
+
     # Insert VOEvent to the database
     mysql_update.insert_voevent('voevent_lvc', params)
 
     # Send alert email
-    print("GCN/LVC alert {} received, started processing.".format(ivorn))
-    try:
-        send_mail(subject="[GW@Wise] LVC alert received",
-                  text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
-                  files=[filename+'.xml'])
-    except:
-        print("Failed to send email!")
-        pass
+    if params['Retraction'] == 0:
+        try:
+            send_mail(subject="[GW@Wise] LVC alert received",
+                      text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
+                      files=[filename+'.xml'])
+        except:
+            print("Failed to send email!")
+            pass
+    else:
+        print("Event retracted, doing nothing.")
+        try:
+            send_mail(subject="[GW@Wise] LVC event retracted",
+                      text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
+                      files=[filename+'.xml'])
+        except:
+            print("Failed to send email!")
+            pass
+        return
 
     # Download the HEALPix sky map FITS file.
     tmp_path = download_file(params['skymap_fits'])

@@ -51,6 +51,9 @@ PASSWD = password
 DB = gw
 SOCKET = /var/run/mysqld/mysqld.sock
 
+[ALERT FILES]
+PATH = /path/to/alerts/
+
 [EVENT FILES]
 PATH = /path/to/ligoevent_fits/
 
