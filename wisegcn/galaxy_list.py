@@ -18,6 +18,7 @@ credzone = config.getfloat('GALAXIES', 'CREDZONE')
 nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')
 completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
 minGalaxies = config.getfloat('GALAXIES', 'MINGALAXIES')
+ngalaxtoshow = config.getfloat('GALAXIES', 'MAXGALAXIES')  # SET NO. OF BEST GALAXIES TO USE
 
 # magnitude of event in r-band. values are value from barnes... +-1.5 mag
 minmag = config.getfloat('GALAXIES', 'MINMAG')
@@ -128,7 +129,7 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99)
     luminositynormalization = np.sum(luminosity)
     normalization = np.sum(p * luminosityNorm)
 
-    # taking 50% of mass (missingpiece is the area under the Schecter function between l=inf and the brightest galaxy
+    # taking 50% of mass (missing piece is the area under the Schecter function between l=inf and the brightest galaxy
     # in the field.
     # if the brightest galaxy in the field is fainter than the Schecter function cutoff- no cutoff is made.
     # while the number of galaxies in the field is smaller than minGalaxies- we allow for fainter galaxies,
@@ -167,7 +168,7 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99)
     distanceFactor[absolute_sensitivity_lum<minL] = 1
     distanceFactor[absolute_sensitivity>maxL] = mindistFactor
 
-    # sorting glaxies by probability
+    # sorting galaxies by probability
     ii = np.argsort(p*luminosityNorm*distanceFactor)[::-1]
 
     #### counting galaxies that constitute 50% of the probability(~0.5*0.98)
@@ -192,16 +193,14 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99)
     # 99percent_area = area of map in [deg^2] consisting 99% (using only the map from LIGO)
     stats = {"Ngalaxies_50percent": galaxies50per, "actual_percentage": sum*100, "seen_percentage": sum_seen, "99percent_area": area}
 
-
-    # creating sorted galaxy list, containing info. each entry is (glade_id, RA, DEC, distance(Mpc), Bmag, score, distance factor(between 0-1))
-    # score is normalized so that all the galaxies in the field sum to 1 (before luminosity cutoff)
-    galaxylist = np.ndarray((galax.shape[0], 7))
-    
-    ngalaxtoshow = 500  # SET NO. OF BEST GALAXIES TO USE
     if len(ii) > ngalaxtoshow:
         n = ngalaxtoshow
     else:
         n = len(ii)
+
+    # creating sorted galaxy list, containing info. each entry is (glade_id, RA, DEC, distance(Mpc), Bmag, score, distance factor(between 0-1))
+    # score is normalized so that all the galaxies in the field sum to 1 (before luminosity cutoff)
+    galaxylist = np.ndarray((ngalaxtoshow, 7))
 
     # adding to galaxy table database
     for i in range(ii.shape[0])[:n]:

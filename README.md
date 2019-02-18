@@ -59,6 +59,7 @@ CREDZONE = 0.99
 NSIGMAS_IN_D = 3
 COMPLETENESS = 0.5
 MINGALAXIES = 100
+MAXGALAXIES = 500 ; number of best galaxies to use
 MINMAG = -12 ; magnitude of event in r-band
 MAXMAG = -17 ; magnitude of event in r-band
 SENSITIVITY = 22
