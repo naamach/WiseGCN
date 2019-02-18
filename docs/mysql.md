@@ -40,7 +40,7 @@ mysql> CREATE TABLE `voevent_lvc` (
 	`author_ivorn` text,
 	`date_ivorn` text,
 	`internal` int,
-	`Packet_Type` int
+	`Packet_Type` int,
 	`Pkt_Ser_Num` text,
 	`GraceID` text,
 	`AlertType` text,
