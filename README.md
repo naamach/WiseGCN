@@ -114,14 +114,22 @@ $ netstat -ln | grep mysql
 
 To listen and process public events run:
 
+
+```
+$ wisegcn-listen
+```
+
+This will listen for VOEvents until killed with ctrl+C.
+
+Alternativey, from inside `python` run:
+
 ```
 import gcn
 from wisegcn.handler import process_gcn
 
+print("Listening to GCN notices (press Ctrl+C to kill)...")
 gcn.listen(handler=process_gcn)
 ```
-
-This will listen for VOEvents until killed with ctrl+C.
 
 ### Testing `wisegcn` offline
 
@@ -134,9 +142,16 @@ $ curl -O https://emfollow.docs.ligo.org/userguide/_static/MS181101ab-1-Prelimin
 Then run:
 
 ```
+$ wisegcn_localtest
+```
+
+Alternativey, from inside `python` run:
+
+```
 from wisegcn.handler import process_gcn
 import lxml.etree
 
+print("Assuming MS181101ab-1-Preliminary.xml is in the working directory")
 filename = 'MS181101ab-1-Preliminary.xml'
 
 payload = open(filename, 'rb').read()
