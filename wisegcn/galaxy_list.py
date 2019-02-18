@@ -18,7 +18,7 @@ credzone = config.getfloat('GALAXIES', 'CREDZONE')
 nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')
 completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
 minGalaxies = config.getfloat('GALAXIES', 'MINGALAXIES')
-ngalaxtoshow = config.getfloat('GALAXIES', 'MAXGALAXIES')  # SET NO. OF BEST GALAXIES TO USE
+ngalaxtoshow = config.getint('GALAXIES', 'MAXGALAXIES')  # SET NO. OF BEST GALAXIES TO USE
 
 # magnitude of event in r-band. values are value from barnes... +-1.5 mag
 minmag = config.getfloat('GALAXIES', 'MINMAG')
