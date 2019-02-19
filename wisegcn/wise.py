@@ -84,22 +84,14 @@ def process_galaxy_list(galaxies, filename='galaxies'):
 
         if nothing_to_observe:
             print("Nothing to observe.")
-            try:
-                send_mail(subject="[GW@Wise] Nothing to observe",
-                          text="Nothing to observe for alert {}.".format(filename))
-            except:
-                print("Failed to send email!")
-                pass
+            send_mail(subject="[GW@Wise] Nothing to observe",
+                      text="Nothing to observe for alert {}.".format(filename))
+
         else:
             print("Created observing plan for alert {}.".format(filename))
-            try:
-                send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
-                          text="{} observing plan for alert {}."
-                          .format(telescopes[tel], filename),
-                          files=[rtml_filename])
-            except:
-                print("Failed to send email!")
-                pass
+            send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
+                      text="{} observing plan for alert {}."
+                      .format(telescopes[tel], filename),
+                      files=[rtml_filename])
 
-        #rtml.import_to_scheulder(rtml_filename)
     return

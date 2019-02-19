@@ -81,23 +81,15 @@ def process_gcn(payload, root):
     # Is retracted?
     if params['Packet_Type'] == 164:
         print("Event retracted, doing nothing.")
-        try:
-            send_mail(subject="[GW@Wise] LVC event retracted",
-                      text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
-                      files=[alerts_path + filename + '.xml'])
-        except:
-            print("Failed to send email!")
-            pass
+        send_mail(subject="[GW@Wise] LVC event retracted",
+                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
+                  files=[alerts_path + filename + '.xml'])
         return
 
     # Send alert email
-    try:
-        send_mail(subject="[GW@Wise] LVC alert received",
-                  text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
-                  files=[alerts_path+filename+'.xml'])
-    except:
-        print("Failed to send email!")
-        pass
+    send_mail(subject="[GW@Wise] LVC alert received",
+              text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
+              files=[alerts_path+filename+'.xml'])
 
     # Download the HEALPix sky map FITS file.
     tmp_path = download_file(params['skymap_fits'])

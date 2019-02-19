@@ -41,6 +41,12 @@ def send_mail(subject, text,
         part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
         msg.attach(part)
 
-    smtp = smtplib.SMTP(server)
-    smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
-    smtp.close()
+    try:
+        smtp = smtplib.SMTP(server)
+        smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
+        smtp.close()
+    except Exception as e:
+        code, msg = e.args
+        print("Failed to send email!")
+        print("Error code = {}".format(code))
+        print(msg)

@@ -226,7 +226,7 @@ Then, convert it to `npy` in `python` (make sure you run `python` under a user w
 data = np.genfromtxt('/var/lib/mysql-files/glade_2.3_RA_Dec.csv', delimiter=",")
 np.save('glade_2.3_RA_Dec.npy', data)
 ```
-and move the 'glade_2.3_RA_Dec.npy' file to the catalog folder you defined in `config.ini` (e.g. `/usr/local/miniconda2/pkgs/pygcn-wise/catalog`).
+and move the 'glade_2.3_RA_Dec.npy' file to the catalog folder you defined in `config.ini`.
 
 ## Result table
 
