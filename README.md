@@ -59,7 +59,9 @@ PATH = /path/to/ligoevent_fits/
 
 [GALAXIES]
 CREDZONE = 0.99
+RELAXED_CREDZONE = 0.99995
 NSIGMAS_IN_D = 3
+RELAXED_NSIGMAS_IN_D = 5
 COMPLETENESS = 0.5
 MINGALAXIES = 100
 MAXGALAXIES = 500 ; number of best galaxies to use
