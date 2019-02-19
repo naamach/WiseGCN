@@ -84,7 +84,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
         if nothing_to_observe:
             print("Nothing to observe.")
             send_mail(subject="[GW@Wise] Nothing to observe",
-                      text="Nothing to observe for alert {}.\n Event most probable RA={}, Dec={}."
+                      text="Nothing to observe for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(filename, ra_event, dec_event))
 
         else:
@@ -93,7 +93,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
 
             print("Created observing plan for alert {}.".format(filename))
             send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
-                      text="{} observing plan for alert {}.\n Event most probable RA={}, Dec={}."
+                      text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(telescopes[tel], filename, ra_event, dec_event),
                       files=[rtml_filename])
 
