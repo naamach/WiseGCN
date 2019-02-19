@@ -10,7 +10,7 @@ setup(name='wisegcn',
       url='https://github.com/naamach/wisegcn',
       license='LICENSE.txt',
       packages=setuptools.find_packages(),
-      install_requires=['pygcn', 'healpy', 'configparser', 'astropy', 'pymysql', 'voevent-parse', 'numpy', 'scipy', 'schedulertml'],
+      install_requires=['pygcn', 'healpy', 'configparser', 'astropy', 'pymysql', 'voevent-parse', 'numpy', 'scipy'],
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',
