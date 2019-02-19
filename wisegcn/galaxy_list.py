@@ -18,10 +18,10 @@ relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
 nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')
 relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
 completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
-min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')
-max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # SET NO. OF BEST GALAXIES TO USE
+min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies
+max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # maximal number of galaxies to use
 
-# magnitude of event in r-band. values are value from barnes... +-1.5 mag
+# magnitude of event in r-band. values are value from Barnes... +-1.5 mag
 minmag = config.getfloat('GALAXIES', 'MINMAG')
 maxmag = config.getfloat('GALAXIES', 'MAXMAG')
 sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')
@@ -34,6 +34,7 @@ maxL = mag.f_nu_from_magAB(maxmag)
 # Schechter function parameters:
 alpha = config.getfloat('GALAXIES', 'ALPHA')
 MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
+
 
 def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99, relaxed_credzone = 0.99995):
     # Read the HEALPix sky map:
@@ -83,7 +84,7 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
         prob_sorted = prob_sorted[:-1]
         npix_credzone = npix_credzone + 1
 
-    area = npix_credzone * hp.nside2pixarea(nside, degrees=True)
+    # area = npix_credzone * hp.nside2pixarea(nside, degrees=True)
 
     ####################################################
 
@@ -179,23 +180,23 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     # Sort galaxies by probability
     ranking_idx = np.argsort(p*luminosity_norm*distance_factor)[::-1]
 
-    # Count galaxies that constitute 50% of the probability (~0.5*0.98)
-    sum = 0
-    galaxies50per = 0
-    sum_seen = 0
-    while sum < 0.5:
-        if galaxies50per >= len(ranking_idx):
-            break
-        sum = sum + (p[ranking_idx[galaxies50per]] * luminosity_norm[ranking_idx[galaxies50per]]) / float(normalization)
-        sum_seen = sum_seen + (p[ranking_idx[galaxies50per]] * luminosity_norm[ranking_idx[galaxies50per]] * distance_factor[ranking_idx[galaxies50per]]) / float(normalization)
-        galaxies50per = galaxies50per + 1
-
-    # Event statistics:
-    # Ngalaxies_50percent = the number of galaxies consisting 50% of probability (including luminosity but not distance factor)
-    # actual_percentage = usually around 50
-    # seen_percentage = if we include the distance factor - how much do the same galaxies worth
-    # 99percent_area = area of map in [deg^2] consisting 99% (using only the map from LIGO)
-    stats = {"Ngalaxies_50percent": galaxies50per, "actual_percentage": sum*100, "seen_percentage": sum_seen, "99percent_area": area}
+    # # Count galaxies that constitute 50% of the probability (~0.5*0.98)
+    # sum = 0
+    # galaxies50per = 0
+    # sum_seen = 0
+    # while sum < 0.5:
+    #     if galaxies50per >= len(ranking_idx):
+    #         break
+    #     sum = sum + (p[ranking_idx[galaxies50per]] * luminosity_norm[ranking_idx[galaxies50per]]) / float(normalization)
+    #     sum_seen = sum_seen + (p[ranking_idx[galaxies50per]] * luminosity_norm[ranking_idx[galaxies50per]] * distance_factor[ranking_idx[galaxies50per]]) / float(normalization)
+    #     galaxies50per = galaxies50per + 1
+    #
+    # # Event statistics:
+    # # Ngalaxies_50percent = the number of galaxies consisting 50% of probability (including luminosity but not distance factor)
+    # # actual_percentage = usually around 50
+    # # seen_percentage = if we include the distance factor - how much do the same galaxies worth
+    # # 99percent_area = area of map in [deg^2] consisting 99% (using only the map from LIGO)
+    # stats = {"Ngalaxies_50percent": galaxies50per, "actual_percentage": sum*100, "seen_percentage": sum_seen, "99percent_area": area}
 
     # Limit the maximal number of galaxies to use:
     if len(ranking_idx) > max_galaxies:
@@ -217,4 +218,4 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
                            'gladeid': cat_id[ind]}
         mysql_update.insert_values('lvc_galaxies', lvc_galaxy_dict)
 
-    return galaxylist  #, stats
+    return galaxylist, ra_maxprob, dec_maxprob

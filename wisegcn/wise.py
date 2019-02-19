@@ -10,7 +10,8 @@ config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 is_debug = config.getboolean('GENERAL', 'DEBUG') if config.has_option('GENERAL', 'DEBUG') else False
 
-def process_galaxy_list(galaxies, filename='galaxies'):
+
+def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=None):
     """Get the full galaxy list, and find which are good to observe at Wise"""
 
     t = Time.now()
@@ -79,19 +80,21 @@ def process_galaxy_list(galaxies, filename='galaxies'):
                                  exptime=config.get(telescopes[tel], 'EXPTIME'),
                                  binning=config.get(telescopes[tel], 'BINNING'))
 
-        rtml_filename = config.get('WISE', 'PATH')+filename+'_'+telescopes[tel]+'.xml'
-        rtml.write(root, rtml_filename)
-
+        print("Event most probable RA={}, Dec={}.".format(ra_event, dec_event))
         if nothing_to_observe:
             print("Nothing to observe.")
             send_mail(subject="[GW@Wise] Nothing to observe",
-                      text="Nothing to observe for alert {}.".format(filename))
+                      text="Nothing to observe for alert {}.\n Event most probable RA={}, Dec={}."
+                      .format(filename, ra_event, dec_event))
 
         else:
+            rtml_filename = config.get('WISE', 'PATH') + filename + '_' + telescopes[tel] + '.xml'
+            rtml.write(root, rtml_filename)
+
             print("Created observing plan for alert {}.".format(filename))
             send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
-                      text="{} observing plan for alert {}."
-                      .format(telescopes[tel], filename),
+                      text="{} observing plan for alert {}.\n Event most probable RA={}, Dec={}."
+                      .format(telescopes[tel], filename, ra_event, dec_event),
                       files=[rtml_filename])
 
     return

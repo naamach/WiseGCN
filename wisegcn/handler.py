@@ -98,9 +98,9 @@ def process_gcn(payload, root):
     shutil.move(tmp_path, skymap_path)
 
     # Create the galaxy list
-    galaxies = galaxy_list.find_galaxy_list(skymap_path)
+    galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path)
 
     # Create Wise plan
-    wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1])
+    wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec)
 
     print("Done.")

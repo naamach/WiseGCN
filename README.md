@@ -31,7 +31,7 @@ The file should look like that (see `config.ini.example` in the main directory):
 ; config.ini
 [GENERAL]
 TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
-DEBUG = True ; True - print more details
+DEBUG = False ; True - print more details
 
 [CATALOG]
 PATH = /path/to/catalog/
@@ -69,8 +69,8 @@ MINMAG = -12 ; magnitude of event in r-band
 MAXMAG = -17 ; magnitude of event in r-band
 SENSITIVITY = 22
 MINDISTFACTOR = 0.01 ; reflecting a small chance that the theory is completely wrong and we can still see something
-ALPHA = -1.07 ; Schecter function parameters
-MB_STAR = -20.7 ; Schecter function parameters, random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
+ALPHA = -1.07 ; Schechter function parameters
+MB_STAR = -20.7 ; Schechter function parameters, random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
 
 [OBSERVING]
 SUN_ALT_MAX = -12
