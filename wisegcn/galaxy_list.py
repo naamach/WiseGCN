@@ -26,7 +26,7 @@ minmag = config.getfloat('GALAXIES', 'MINMAG')
 maxmag = config.getfloat('GALAXIES', 'MAXMAG')
 sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')
 
-mindistFactor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
+min_dist_factor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
 
 minL = mag.f_nu_from_magAB(minmag)
 maxL = mag.f_nu_from_magAB(maxmag)
@@ -172,9 +172,9 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     distance_factor = np.zeros(cat_id.shape[0])
 
     distance_factor[:] = ((maxL - absolute_sensitivity_lum) / (maxL - minL))
-    distance_factor[mindistFactor > (maxL - absolute_sensitivity_lum) / (maxL - minL)] = mindistFactor
+    distance_factor[min_dist_factor > (maxL - absolute_sensitivity_lum) / (maxL - minL)] = min_dist_factor
     distance_factor[absolute_sensitivity_lum < minL] = 1
-    distance_factor[absolute_sensitivity > maxL] = mindistFactor
+    distance_factor[absolute_sensitivity > maxL] = min_dist_factor
 
     # Sort galaxies by probability
     ranking_idx = np.argsort(p*luminosity_norm*distance_factor)[::-1]
