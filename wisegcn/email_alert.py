@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from configparser import ConfigParser
 
-config = ConfigParser()
+config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 

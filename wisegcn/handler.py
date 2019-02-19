@@ -19,11 +19,12 @@ is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', '
 
 # Function to call every time a GCN is received.
 # Run only for notices of type
-# LVC_PRELIMINARY, LVC_INITIAL, or LVC_UPDATE.
+# LVC_PRELIMINARY, LVC_INITIAL, LVC_UPDATE, or LVC_RETRACTION.
 @gcn.handlers.include_notice_types(
     gcn.notice_types.LVC_PRELIMINARY,
     gcn.notice_types.LVC_INITIAL,
-    gcn.notice_types.LVC_UPDATE)
+    gcn.notice_types.LVC_UPDATE,
+    gcn.notice_types.LVC_RETRACTION)
 def process_gcn(payload, root):
     # Respond only to 'test'/'observation' events
     if is_test:
@@ -101,3 +102,5 @@ def process_gcn(payload, root):
 
     # Create Wise plan
     wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1])
+
+    print("Done.")

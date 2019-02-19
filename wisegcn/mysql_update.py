@@ -1,7 +1,7 @@
 import pymysql.cursors
 from configparser import ConfigParser
 
-config = ConfigParser()
+config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 conn = pymysql.connect(host=config.get('DB', 'HOST'),
