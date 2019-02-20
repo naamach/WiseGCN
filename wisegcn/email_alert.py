@@ -46,7 +46,7 @@ def send_mail(subject, text,
         smtp = smtplib.SMTP(server)
         smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
         smtp.close()
-        logging.debug("Email sent to {}", send_to + cc_to + bcc_to)
+        logging.debug("Email sent.")
     except Exception as e:
         code, msg = e.args
         logging.error("Failed to send email! Error {}: {}".format(code, msg))
