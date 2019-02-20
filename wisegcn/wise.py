@@ -11,10 +11,13 @@ config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 
-def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=None):
+def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=None, log=None):
     """Get the full galaxy list, and find which are good to observe at Wise"""
 
-    logging.info("Event most probable RA={}, Dec={}.".format(
+    if log is None:
+        log = logging.getLogger(__name__)
+
+    log.info("Event most probable RA={}, Dec={}.".format(
         ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
         dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)))
 
@@ -24,20 +27,20 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                     alt=config.getfloat('WISE', 'ALT')*u.m,
                     t=t,
                     sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg):
-        logging.info("Daytime at Wise! Preparing a plan for next sunset.")
+        log.info("Daytime at Wise! Preparing a plan for next sunset.")
         t = next_night(lat=config.getfloat('WISE', 'LAT')*u.deg,
                     lon=config.getfloat('WISE', 'LON')*u.deg,
                     alt=config.getfloat('WISE', 'ALT')*u.m,
                     t=t,
                     sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
     else:
-        logging.info("It's nighttime at Wise! Preparing a plan for NOW.")
+        log.info("It's nighttime at Wise! Preparing a plan for NOW.")
 
     telescopes = config.get('WISE', 'TELESCOPES').split(',')
 
     nothing_to_observe = True
     for tel in range(0, len(telescopes)):
-        logging.info("Writing a plan for the {}".format(telescopes[tel]))
+        log.info("Writing a plan for the {}".format(telescopes[tel]))
         root = rtml.init(name=config.get('OBSERVING', 'USER'),
                          email=config.get('OBSERVING', 'EMAIL'))
 
@@ -52,7 +55,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                                 hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
                                 hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
 
-        logging.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
+        log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
 
         for i in range(tel, galaxies.shape[0], len(telescopes)):
             ra = Angle(galaxies[i, 1] * u.deg)
@@ -69,7 +72,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
 
             if is_observe:
                 nothing_to_observe = False
-                logging.debug(
+                log.debug(
                     "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}\t\tadded to plan!".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
@@ -88,7 +91,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                                  exptime=config.get(telescopes[tel], 'EXPTIME'),
                                  binning=config.get(telescopes[tel], 'BINNING'))
             else:
-                logging.debug(
+                log.debug(
                     "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
@@ -96,7 +99,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                         airmass, ha, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
         if nothing_to_observe:
-            logging.info("Nothing to observe.")
+            log.info("Nothing to observe.")
             send_mail(subject="[GW@Wise] Nothing to observe",
                       text="Nothing to observe for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(filename,
@@ -107,7 +110,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
             rtml_filename = config.get('WISE', 'PATH') + filename + '_' + telescopes[tel] + '.xml'
             rtml.write(root, rtml_filename)
 
-            logging.info("Created observing plan for alert {}.".format(filename))
+            log.info("Created observing plan for alert {}.".format(filename))
             send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
                       text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(telescopes[tel], filename,

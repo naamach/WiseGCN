@@ -39,12 +39,15 @@ alpha = config.getfloat('GALAXIES', 'ALPHA')
 MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
 
 
-def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99, relaxed_credzone = 0.99995):
+def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone=0.99, relaxed_credzone=0.99995):
+    if log is None:
+        log = logging.getLogger(__name__)
+
     # Read the HEALPix sky map:
     try:
         prob, dist_mu, dist_sigma, dist_norm = hp.read_map(skymap_path, field=None, verbose=False)
     except Exception as e:
-        logging.error('Failed to read sky map!')
+        log.error('Failed to read sky map!')
         send_mail(subject="[GW@Wise] Failed to read LVC sky map",
                   text='''FITS file: {}
                           Exception: {}'''.format(skymap_path, e))
@@ -130,9 +133,9 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     cat_Bmag = cat_Bmag[within_idx]
 
     if cat_id.size == 0:
-        logging.warning("No galaxies in field!")
-        logging.warning("99.995% of probability is ", npix_credzone*hp.nside2pixarea(nside, degrees=True), "deg^2")
-        logging.warning("Peaking at (deg) RA = {}, Dec = {}".format(
+        log.warning("No galaxies in field!")
+        log.warning("99.995% of probability is ", npix_credzone*hp.nside2pixarea(nside, degrees=True), "deg^2")
+        log.warning("Peaking at (deg) RA = {}, Dec = {}".format(
             ra_maxprob.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
             dec_maxprob.to_string(sep=':', precision=2, alwayssign=True, pad=True)))
         return

@@ -24,7 +24,7 @@ def init_log(filename="log.log"):
     if not os.path.exists(log_path):
         os.makedirs(log_path)
 
-    log = logging.getLogger()
+    log = logging.getLogger(__name__)
     log.setLevel(logging.DEBUG)
 
     # console handler
@@ -37,9 +37,12 @@ def init_log(filename="log.log"):
     # log file handler
     h = logging.FileHandler(log_path + filename + ".log", "w", encoding=None, delay="true")
     h.setLevel(logging.getLevelName(file_log_level))
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s()]: %(message)s", "%Y-%m-%d %H:%M:%S")
     h.setFormatter(formatter)
     log.addHandler(h)
+
+    return log
 
 
 # Function to call every time a GCN is received.
@@ -67,14 +70,14 @@ def process_gcn(payload, root):
 
     ivorn = root.attrib['ivorn']
     filename = ntpath.basename(ivorn).split('#')[1]
-    init_log(filename)
+    log = init_log(filename)
 
     # Is retracted?
     if gcn.handlers.get_notice_type(root) == gcn.notice_types.LVC_RETRACTION:
         # Save alert to file
         with open(alerts_path + filename + '.xml', "wb") as f:
             f.write(payload)
-        logging.info("Event {} retracted, doing nothing.".format(ivorn))
+        log.info("Event {} retracted, doing nothing.".format(ivorn))
         send_mail(subject="[GW@Wise] LVC event retracted",
                   text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
                   files=[alerts_path + filename + '.xml'])
@@ -90,13 +93,13 @@ def process_gcn(payload, root):
     # Respond only to 'CBC' (compact binary coalescence candidates) events.
     # Change 'CBC' to 'Burst' to respond to only unmodeled burst events.
     if params['Group'] != 'CBC':
-        logging.info('Not CBC, aborting.')
+        log.info('Not CBC, aborting.')
         return
 
     # Save alert to file
     with open(alerts_path+filename+'.xml', "wb") as f:
         f.write(payload)
-    logging.info("GCN/LVC alert {} received, started processing.".format(ivorn))
+    log.info("GCN/LVC alert {} received, started processing.".format(ivorn))
 
     # Read VOEvent attributes
     keylist = ['ivorn', 'role', 'version']
@@ -119,7 +122,7 @@ def process_gcn(payload, root):
     params['how_description'] = description
 
     # Insert VOEvent to the database
-    mysql_update.insert_voevent('voevent_lvc', params)
+    mysql_update.insert_voevent('voevent_lvc', params, log)
 
     # Send alert email
     send_mail(subject="[GW@Wise] LVC alert received",
@@ -132,9 +135,9 @@ def process_gcn(payload, root):
     shutil.move(tmp_path, skymap_path)
 
     # Create the galaxy list
-    galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path)
+    galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
 
     # Create Wise plan
-    wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec)
+    wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
 
-    logging.info("Done.")
+    log.info("Done.")

@@ -12,7 +12,10 @@ conn = pymysql.connect(host=config.get('DB', 'HOST'),
                        unix_socket=config.get('DB', 'SOCKET'))
 
 
-def insert_values(table, dict_to_insert):
+def insert_values(table, dict_to_insert, log=None):
+    if log is None:
+        log = logging.getLogger(__name__)
+
     keys = dict_to_insert.keys()
     vals = [str(dict_to_insert[key]) for key in keys]
     query = 'INSERT INTO {} (`{}`) VALUES ({});'.format(table, '`, `'.join(keys), ', '.join('{}'.format('"{}"'.format(v) if "SELECT" not in v else v) for v in vals))
@@ -21,9 +24,9 @@ def insert_values(table, dict_to_insert):
         cursor.execute(query)
     except pymysql.err.InternalError as e:
         code, msg = e.args
-        logging.error("Failed to insert values into table {}.".format(table))
-        logging.error("Error code = {}".format(code))
-        logging.error(msg)
+        log.error("Failed to insert values into table {}.".format(table))
+        log.error("Error code = {}".format(code))
+        log.error(msg)
     conn.commit()
     cursor.close()
 

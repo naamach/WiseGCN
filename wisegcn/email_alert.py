@@ -17,10 +17,14 @@ def send_mail(subject, text,
               cc_to=[e.strip() for e in config.get('EMAIL', 'CC').split(',')] if config.has_option('EMAIL', 'CC') else '',
               bcc_to=[e.strip() for e in config.get('EMAIL', 'BCC').split(',')] if config.has_option('EMAIL', 'BCC') else '',
               files=None,
-              server=config.get('EMAIL', 'SERVER') if config.has_option('EMAIL', 'SERVER') else 'localhost'):
+              server=config.get('EMAIL', 'SERVER') if config.has_option('EMAIL', 'SERVER') else 'localhost',
+              log=None):
     # based on: https://stackoverflow.com/questions/3362600/how-to-send-email-attachments
 
     assert isinstance(send_to, list)
+
+    if log is None:
+        log = logging.getLogger(__name__)
 
     msg = MIMEMultipart()
     msg['From'] = send_from
@@ -46,7 +50,7 @@ def send_mail(subject, text,
         smtp = smtplib.SMTP(server)
         smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
         smtp.close()
-        logging.debug("Email sent.")
+        log.debug("Email sent.")
     except Exception as e:
         code, msg = e.args
-        logging.error("Failed to send email! Error {}: {}".format(code, msg))
+        log.error("Failed to send email! Error {}: {}".format(code, msg))
