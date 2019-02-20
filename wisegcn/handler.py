@@ -36,6 +36,20 @@ def process_gcn(payload, root):
         print('Not {}, aborting.'.format(role))
         return
 
+    ivorn = root.attrib['ivorn']
+    filename = ntpath.basename(ivorn).split('#')[1]
+
+    # Is retracted?
+    if gcn.handlers.get_notice_type(root) == gcn.notice_types.LVC_RETRACTION:
+        # Save alert to file
+        with open(alerts_path + filename + '.xml', "wb") as f:
+            f.write(payload)
+        print("Event {} retracted, doing nothing.".format(ivorn))
+        send_mail(subject="[GW@Wise] LVC event retracted",
+                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
+                  files=[alerts_path + filename + '.xml'])
+        return
+
     v = vp.loads(payload)
 
     # Read all of the VOEvent parameters from the "What" section
@@ -50,8 +64,6 @@ def process_gcn(payload, root):
         return
 
     # Save alert to file
-    ivorn = v.attrib['ivorn']
-    filename = ntpath.basename(ivorn).split('#')[1]
     with open(alerts_path+filename+'.xml', "wb") as f:
         f.write(payload)
     print("GCN/LVC alert {} received, started processing.".format(ivorn))
@@ -78,14 +90,6 @@ def process_gcn(payload, root):
 
     # Insert VOEvent to the database
     mysql_update.insert_voevent('voevent_lvc', params)
-
-    # Is retracted?
-    if params['Packet_Type'] == 164:
-        print("Event retracted, doing nothing.")
-        send_mail(subject="[GW@Wise] LVC event retracted",
-                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
-                  files=[alerts_path + filename + '.xml'])
-        return
 
     # Send alert email
     send_mail(subject="[GW@Wise] LVC alert received",
