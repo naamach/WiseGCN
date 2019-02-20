@@ -45,6 +45,14 @@ def init_log(filename="log.log"):
     return log
 
 
+def close_log(log):
+    handlers = list(log.handlers)
+    for h in handlers:
+        log.removeHandler(h)
+        h.flush()
+        h.close()
+
+
 # Function to call every time a GCN is received.
 # Run only for notices of type
 # LVC_PRELIMINARY, LVC_INITIAL, LVC_UPDATE, or LVC_RETRACTION.
@@ -122,7 +130,7 @@ def process_gcn(payload, root):
     params['how_description'] = description
 
     # Insert VOEvent to the database
-    mysql_update.insert_voevent('voevent_lvc', params, log)
+    mysql_update.insert_voevent('voevent_lvc', params, log=log)
 
     # Send alert email
     send_mail(subject="[GW@Wise] LVC alert received",
@@ -140,4 +148,6 @@ def process_gcn(payload, root):
     # Create Wise plan
     wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
 
+    # Finish and delete logger
     log.info("Done.")
+    close_log(log)
