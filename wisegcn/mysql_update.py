@@ -1,5 +1,6 @@
 import pymysql.cursors
 from configparser import ConfigParser
+import logging
 
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
@@ -20,9 +21,9 @@ def insert_values(table, dict_to_insert):
         cursor.execute(query)
     except pymysql.err.InternalError as e:
         code, msg = e.args
-        print("Failed to insert values into table {}.".format(table))
-        print("Error code = {}".format(code))
-        print(msg)
+        logging.error("Failed to insert values into table {}.".format(table))
+        logging.error("Error code = {}".format(code))
+        logging.error(msg)
     conn.commit()
     cursor.close()
 

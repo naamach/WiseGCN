@@ -1,7 +1,11 @@
 ; config.ini
 [GENERAL]
 TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
-DEBUG = False ; True - print more details
+
+[LOG]
+PATH = /path/to/log/
+CONSOLE_LEVEL = DEBUG ; DEBUG, INFO, WARNING, ERROR, CRITICAL
+FILE_LEVEL = DEBUG ; DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 [CATALOG]
 PATH = /path/to/catalog/

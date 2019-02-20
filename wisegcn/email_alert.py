@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from configparser import ConfigParser
+import logging
 
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
@@ -45,8 +46,7 @@ def send_mail(subject, text,
         smtp = smtplib.SMTP(server)
         smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
         smtp.close()
+        logging.debug("Email sent to {}", send_to + cc_to + bcc_to)
     except Exception as e:
         code, msg = e.args
-        print("Failed to send email!")
-        print("Error code = {}".format(code))
-        print(msg)
+        logging.error("Failed to send email! Error {}: {}".format(code, msg))

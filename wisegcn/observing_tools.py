@@ -26,7 +26,6 @@ def next_night(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
 
 def calc_airmass(ra, dec, lat, lon, alt, t=Time.now()):
     obs = EarthLocation(lat=lat, lon=lon, height=alt)
-    print("{}, {}".format(ra, dec))
     obj = SkyCoord(ra=ra, dec=dec, frame='icrs')
     obj_altaz = obj.transform_to(AltAz(obstime=t, location=obs))
     airmass = obj_altaz.secz
@@ -40,17 +39,24 @@ def calc_hourangle(ra, lon, t=Time.now()):
 
 
 def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle, ha_max=4.6*u.hourangle,
-                  airmass_min=1.02, airmass_max=3):
+                  airmass_min=1.02, airmass_max=3, return_values=False):
     # is the object visible?
     airmass = calc_airmass(ra, dec, lat, lon, alt, t)
-    print("airmass={:f}".format(airmass))
     if airmass <= airmass_min or airmass >= airmass_max:
-        return False
+        if return_values:
+            return False, airmass, 0
+        else:
+            return False
 
     # is the hour angle within the limits?
     ha = calc_hourangle(ra, lon, t)
-    print("HA={:f}".format(ha))
     if ha <= ha_min or ha >= ha_max:
-        return False
+        if return_values:
+            return False, airmass, np.double(ha)
+        else:
+            return False
 
-    return True
+    if return_values:
+        return True, airmass, np.double(ha)
+    else:
+        return True

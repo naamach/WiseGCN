@@ -6,6 +6,9 @@ from configparser import ConfigParser
 from wisegcn.email_alert import send_mail
 from wisegcn import magnitudes as mag
 from wisegcn import mysql_update
+import logging
+from astropy import units as u
+from astropy.coordinates import Angle
 
 # settings:
 config = ConfigParser(inline_comment_prefixes=';')
@@ -41,7 +44,7 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     try:
         prob, dist_mu, dist_sigma, dist_norm = hp.read_map(skymap_path, field=None, verbose=False)
     except Exception as e:
-        print('Failed to read sky map!')
+        logging.error('Failed to read sky map!')
         send_mail(subject="[GW@Wise] Failed to read LVC sky map",
                   text='''FITS file: {}
                           Exception: {}'''.format(skymap_path, e))
@@ -71,6 +74,10 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     theta_maxprob, phi_maxprob = hp.pix2ang(nside, np.argmax(prob))
     ra_maxprob = np.rad2deg(phi_maxprob)
     dec_maxprob = np.rad2deg(0.5*np.pi - theta_maxprob)
+
+    # Convert to coordinates
+    ra_maxprob = Angle(ra_maxprob * u.deg)
+    dec_maxprob = Angle(dec_maxprob * u.deg)
 
     # Find given percent probability zone (default is 99%):
     prob_cutoff = 1
@@ -123,9 +130,11 @@ def find_galaxy_list(skymap_path, completeness = completenessp, credzone = 0.99,
     cat_Bmag = cat_Bmag[within_idx]
 
     if cat_id.size == 0:
-        print("No galaxies in field!")
-        print("99.995% of probability is ", npix_credzone*hp.nside2pixarea(nside, degrees=True), "deg^2")
-        print("Peaking at (deg) RA = {}, Dec = {}".format(ra_maxprob, dec_maxprob))
+        logging.warning("No galaxies in field!")
+        logging.warning("99.995% of probability is ", npix_credzone*hp.nside2pixarea(nside, degrees=True), "deg^2")
+        logging.warning("Peaking at (deg) RA = {}, Dec = {}".format(
+            ra_maxprob.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
+            dec_maxprob.to_string(sep=':', precision=2, alwayssign=True, pad=True)))
         return
 
     # Normalize luminosity to account for mass:

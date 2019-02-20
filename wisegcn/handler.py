@@ -8,13 +8,38 @@ from wisegcn import wise
 from wisegcn import mysql_update
 from configparser import ConfigParser
 import voeventparse as vp
+import logging
+import os
 
 config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
-alerts_path = config.get('ALERT FILES', 'PATH')  # event alert file path
-fits_path = config.get('EVENT FILES', 'PATH')  # event FITS file path
-is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', 'TEST') else False
+
+def init_log(filename="log.log"):
+    log_path = config.get('LOG', 'PATH')  # log file path
+    console_log_level = config.get('LOG', 'CONSOLE_LEVEL')  # logging level
+    file_log_level = config.get('LOG', 'FILE_LEVEL')  # logging level
+
+    # create log folder
+    if not os.path.exists(log_path):
+        os.makedirs(log_path)
+
+    log = logging.getLogger()
+    log.setLevel(logging.DEBUG)
+
+    # console handler
+    h = logging.StreamHandler()
+    h.setLevel(logging.getLevelName(console_log_level))
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S")
+    h.setFormatter(formatter)
+    log.addHandler(h)
+
+    # log file handler
+    h = logging.FileHandler(log_path + filename + ".log", "w", encoding=None, delay="true")
+    h.setLevel(logging.getLevelName(file_log_level))
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%Y-%m-%d %H:%M:%S")
+    h.setFormatter(formatter)
+    log.addHandler(h)
 
 
 # Function to call every time a GCN is received.
@@ -26,6 +51,10 @@ is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', '
     gcn.notice_types.LVC_UPDATE,
     gcn.notice_types.LVC_RETRACTION)
 def process_gcn(payload, root):
+    alerts_path = config.get('ALERT FILES', 'PATH')  # event alert file path
+    fits_path = config.get('EVENT FILES', 'PATH')  # event FITS file path
+    is_test = config.getboolean('GENERAL', 'TEST') if config.has_option('GENERAL', 'TEST') else False
+
     # Respond only to 'test'/'observation' events
     if is_test:
         role = 'test'
@@ -33,18 +62,19 @@ def process_gcn(payload, root):
         role = 'observation'
 
     if root.attrib['role'] != role:
-        print('Not {}, aborting.'.format(role))
+        logging.info('Not {}, aborting.'.format(role))
         return
 
     ivorn = root.attrib['ivorn']
     filename = ntpath.basename(ivorn).split('#')[1]
+    init_log(filename)
 
     # Is retracted?
     if gcn.handlers.get_notice_type(root) == gcn.notice_types.LVC_RETRACTION:
         # Save alert to file
         with open(alerts_path + filename + '.xml', "wb") as f:
             f.write(payload)
-        print("Event {} retracted, doing nothing.".format(ivorn))
+        logging.info("Event {} retracted, doing nothing.".format(ivorn))
         send_mail(subject="[GW@Wise] LVC event retracted",
                   text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
                   files=[alerts_path + filename + '.xml'])
@@ -60,13 +90,13 @@ def process_gcn(payload, root):
     # Respond only to 'CBC' (compact binary coalescence candidates) events.
     # Change 'CBC' to 'Burst' to respond to only unmodeled burst events.
     if params['Group'] != 'CBC':
-        print('Not CBC, aborting.')
+        logging.info('Not CBC, aborting.')
         return
 
     # Save alert to file
     with open(alerts_path+filename+'.xml', "wb") as f:
         f.write(payload)
-    print("GCN/LVC alert {} received, started processing.".format(ivorn))
+    logging.info("GCN/LVC alert {} received, started processing.".format(ivorn))
 
     # Read VOEvent attributes
     keylist = ['ivorn', 'role', 'version']
@@ -107,4 +137,4 @@ def process_gcn(payload, root):
     # Create Wise plan
     wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec)
 
-    print("Done.")
+    logging.info("Done.")
