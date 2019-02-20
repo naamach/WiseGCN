@@ -41,7 +41,7 @@ def get_columns(table):
     return cols
 
 
-def insert_voevent(table, params):
+def insert_voevent(table, params, log=None):
     # Remove keys not included in the table
     cols = get_columns(table)
     dict_to_insert = dict(params)
@@ -49,4 +49,4 @@ def insert_voevent(table, params):
         if key not in cols:
             dict_to_insert.pop(key, None)
     # Insert values to table
-    insert_values(table, dict_to_insert)
+    insert_values(table, dict_to_insert, log)

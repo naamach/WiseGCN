@@ -130,7 +130,7 @@ def process_gcn(payload, root):
     params['how_description'] = description
 
     # Insert VOEvent to the database
-    mysql_update.insert_voevent('voevent_lvc', params, log=log)
+    mysql_update.insert_voevent('voevent_lvc', params, log)
 
     # Send alert email
     send_mail(subject="[GW@Wise] LVC alert received",
