@@ -3,18 +3,32 @@ import gcn
 from wisegcn.handler import process_gcn
 import logging
 
-# Create GCN logger
-gcn_log = logging.getLogger(__name__)
-gcn_log.setLevel(logging.DEBUG)
 
-# console handler
-h = logging.StreamHandler()
-h.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-        "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s()]: %(message)s", "%Y-%m-%d %H:%M:%S")
-h.setFormatter(formatter)
-gcn_log.addHandler(h)
+def init_log(filename="pygcn.log"):
+    # Create GCN logger
+    gcn_log = logging.getLogger(__name__)
+    gcn_log.setLevel(logging.DEBUG)
+
+    # console handler
+    h = logging.StreamHandler()
+    h.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
+    h.setFormatter(formatter)
+    gcn_log.addHandler(h)
+
+    # log file handler
+    h = logging.FileHandler(filename, "w", encoding=None, delay="true")
+    h.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
+    h.setFormatter(formatter)
+    gcn_log.addHandler(h)
+
+    return gcn_log
+
 
 # Listen for GCN notices (until interrupted or killed)
-print("Listening to GCN notices (press Ctrl+C to kill)...")
+gcn_log = init_log()
+gcn_log.info("Listening to GCN notices (press Ctrl+C to kill)...")
 gcn.listen(handler=process_gcn, log=gcn_log)

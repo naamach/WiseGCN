@@ -38,7 +38,7 @@ def init_log(filename="log.log"):
     h = logging.FileHandler(log_path + filename + ".log", "w", encoding=None, delay="true")
     h.setLevel(logging.getLevelName(file_log_level))
     formatter = logging.Formatter(
-        "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s - %(funcName)20s()]: %(message)s", "%Y-%m-%d %H:%M:%S")
+        "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
     h.setFormatter(formatter)
     log.addHandler(h)
 
