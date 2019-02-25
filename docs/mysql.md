@@ -253,3 +253,13 @@ If you want to reset the ID auto increment for a table  (e.g. to reset the `voev
 mysql> ALTER TABLE tablename AUTO_INCREMENT = 1;
 ```
 
+## Print galaxy rankings for a specific VOEvent
+To display the galaxy rankings of the last recorded VOEvent, run:
+```
+mysql> SELECT glade_catalog.glade_id, glade_catalog.ra0, glade_catalog.dec0, glade_catalog.dist, glade_catalog.bmag, lvc_galaxies.score
+	FORM lvc_galaxies
+	INNER JOIN glade_catalog ON glade_catalog.glade_id = lvc_galaxies.gladeid
+	WHERE lvc_galaxies.voeventid = (SELECT MAX(id) from voevent_lvc);
+```
+
+or replace `(SELECT MAX(id) from voevent_lvc)` by the requested VOEvent ID for a different event.
