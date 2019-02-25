@@ -55,6 +55,7 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     # Load the galaxy catalog (glade_id, RA, DEC, distance, Bmag):
     galaxy_cat = np.load(cat_file)
     galaxy_cat = (galaxy_cat[np.where(galaxy_cat[:, 3] > 0), :])[0]  # remove entries with a negative distance
+    galaxy_cat = (galaxy_cat[np.where(galaxy_cat[:, 4] > 0), :])[0]  # remove entries with no Bmag
     cat_id = galaxy_cat[:, 0]
     cat_ra = galaxy_cat[:, 1]
     cat_dec = galaxy_cat[:, 2]
