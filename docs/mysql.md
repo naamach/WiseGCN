@@ -257,7 +257,7 @@ mysql> ALTER TABLE tablename AUTO_INCREMENT = 1;
 To display the galaxy rankings of the last recorded VOEvent, run:
 ```
 mysql> SELECT glade_catalog.glade_id, glade_catalog.ra0, glade_catalog.dec0, glade_catalog.dist, glade_catalog.bmag, lvc_galaxies.score
-	FORM lvc_galaxies
+	FROM lvc_galaxies
 	INNER JOIN glade_catalog ON glade_catalog.glade_id = lvc_galaxies.gladeid
 	WHERE lvc_galaxies.voeventid = (SELECT MAX(id) from voevent_lvc);
 ```
