@@ -9,6 +9,8 @@ from wisegcn import mysql_update
 import logging
 from astropy import units as u
 from astropy.coordinates import Angle
+from astropy.table import Table
+from scipy.stats import norm
 
 # settings:
 config = ConfigParser(inline_comment_prefixes=';')
@@ -16,18 +18,18 @@ config.read('config.ini')
 cat_file = config.get('CATALOG', 'PATH')+config.get('CATALOG', 'NAME')+'.npy'  # galaxy catalog file
 
 # parameters:
-credzone = config.getfloat('GALAXIES', 'CREDZONE')
+credzone = config.getfloat('GALAXIES', 'CREDZONE')  # Localization probability to consider credible
 relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
-nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')
+nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distnace
 relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
 completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
-min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies
+min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies to output
 max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # maximal number of galaxies to use
 
 # magnitude of event in r-band. values are value from Barnes... +-1.5 mag
-minmag = config.getfloat('GALAXIES', 'MINMAG')
-maxmag = config.getfloat('GALAXIES', 'MAXMAG')
-sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')
+minmag = config.getfloat('GALAXIES', 'MINMAG')  # Estimated brightest KN abs mag
+maxmag = config.getfloat('GALAXIES', 'MAXMAG')  # Estimated faintest KN abs mag
+sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')  # Estimatest faintest app mag we can see
 
 min_dist_factor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
 
@@ -54,22 +56,18 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
 
     # Load the galaxy catalog (glade_id, RA, DEC, distance, Bmag):
     galaxy_cat = np.load(cat_file)
-    galaxy_cat = (galaxy_cat[np.where(galaxy_cat[:, 3] > 0), :])[0]  # remove entries with a negative distance
-    galaxy_cat = (galaxy_cat[np.where(galaxy_cat[:, 4] > 0), :])[0]  # remove entries with no Bmag
-    cat_id = galaxy_cat[:, 0]
-    cat_ra = galaxy_cat[:, 1]
-    cat_dec = galaxy_cat[:, 2]
-    cat_dist = galaxy_cat[:, 3]
-    cat_Bmag = galaxy_cat[:, 4]
+    galaxy_cat = Table(galaxy_cat, names=('ID', 'RA', 'Dec', 'Dist', 'Bmag'))
+    galaxy_cat = galaxy_cat[np.where(galaxy_cat['Dist'] > 0)]  # remove entries with a negative distance
+    galaxy_cat = galaxy_cat[np.where(~np.isnan(galaxy_cat['Bmag']))]  # remove entries with no Bmag
 
     # Skymap parameters:
     npix = len(prob)
     nside = hp.npix2nside(npix)
 
     # Convert galaxy WCS (RA, DEC) to spherical coordinates (theta, phi):
-    theta = 0.5 * np.pi - np.deg2rad(cat_dec)
-    phi = np.deg2rad(cat_ra)
-    d = np.array(cat_dist)
+    theta = 0.5 * np.pi - np.deg2rad(galaxy_cat['Dec'])
+    phi = np.deg2rad(galaxy_cat['RA'])
+    d = np.array(galaxy_cat['Dist'])
 
     # Convert galaxy coordinates to skymap pixels:
     galaxy_pix = hp.ang2pix(nside, theta, phi)
@@ -88,7 +86,7 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     prob_sum = 0
     npix_credzone = 0
 
-    prob_sorted = np.sort(prob)
+    prob_sorted = np.sort(prob, kind="stable")
     while prob_sum < credzone:
         prob_sum = prob_sum + prob_sorted[-1]
         prob_cutoff = prob_sorted[-1]
@@ -101,7 +99,7 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
 
     # calculate probability for galaxies by the localization map:
     p = prob[galaxy_pix]
-    p_dist = dist_norm[galaxy_pix] * np.exp(-(d - dist_mu[galaxy_pix])**2 / (2*dist_sigma[galaxy_pix]**2))
+    p_dist = dist_norm[galaxy_pix] * norm(dist_mu[galaxy_pix], dist_sigma[galaxy_pix]).pdf(d)
 
     # cutoffs - 99% of probability by angles and 3sigma by distance:
     within_dist_idx = np.where(np.abs(d - dist_mu[galaxy_pix]) < nsigmas_in_d*dist_sigma[galaxy_pix])
@@ -127,13 +125,9 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     p = p[within_idx]
     p = (p * (p_dist[within_idx]))  # d**2?
 
-    cat_id = cat_id[within_idx]
-    cat_ra = cat_ra[within_idx]
-    cat_dec = cat_dec[within_idx]
-    cat_dist = cat_dist[within_idx]
-    cat_Bmag = cat_Bmag[within_idx]
+    galaxy_cat = galaxy_cat[within_idx]
 
-    if cat_id.size == 0:
+    if len(galaxy_cat) == 0:
         log.warning("No galaxies in field!")
         log.warning("99.995% of probability is ", npix_credzone*hp.nside2pixarea(nside, degrees=True), "deg^2")
         log.warning("Peaking at (deg) RA = {}, Dec = {}".format(
@@ -142,7 +136,7 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
         return
 
     # Normalize luminosity to account for mass:
-    luminosity = mag.L_nu_from_magAB(cat_Bmag - 5 * np.log10(cat_dist * (10 ** 5)))
+    luminosity = mag.L_nu_from_magAB(galaxy_cat['Bmag'] - 5 * np.log10(galaxy_cat['Dist'] * (10 ** 5)))
     luminosity_norm = luminosity / np.sum(luminosity)
     normalization = np.sum(p * luminosity_norm)
     score = p * luminosity_norm / normalization
@@ -150,16 +144,16 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     # Take 50% of mass:
 
     # The area under the Schechter function between L=inf and the brightest galaxy in the field:
-    missing_piece = gammaincc(alpha + 2, 10 ** (-(min(cat_Bmag - 5*np.log10(cat_dist*(10**5))) - MB_star) / 2.5))
+    missing_piece = gammaincc(alpha + 2, 10 ** (-(min(galaxy_cat['Bmag'] - 5*np.log10(galaxy_cat['Dist']*(10**5))) - MB_star) / 2.5))
     # there are no galaxies brighter than this in the field, so don't count that part of the Schechter function
 
     while do_mass_cutoff:
         MB_max = MB_star + 2.5 * np.log10(gammaincinv(alpha + 2, completeness + missing_piece))
 
-        if (min(cat_Bmag - 5*np.log10(cat_dist*(10**5))) - MB_star) > 0:
+        if (min(galaxy_cat['Bmag'] - 5*np.log10(galaxy_cat['Dist']*(10**5))) - MB_star) > 0:
             MB_max = 100  # if the brightest galaxy in the field is fainter than the cutoff brightness - don't cut by brightness
 
-        brightest = np.where(cat_Bmag - 5*np.log10(cat_dist*(10**5)) < MB_max)
+        brightest = np.where(galaxy_cat['Bmag'] - 5*np.log10(galaxy_cat['Dist']*(10**5)) < MB_max)
         # print MB_max
         if len(brightest[0]) < min_galaxies:
             # Not enough galaxies, allowing fainter galaxies
@@ -169,21 +163,17 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
             else:
                 completeness = (completeness + (1. - completeness) / 2)
         else:  # got enough galaxies
-            cat_id = cat_id[brightest]
-            cat_ra = cat_ra[brightest]
-            cat_dec = cat_dec[brightest]
-            cat_dist = cat_dist[brightest]
-            cat_Bmag = cat_Bmag[brightest]
+            galaxy_cat = galaxy_cat[brightest]
             p = p[brightest]
             luminosity_norm = luminosity_norm[brightest]
             score = score[brightest]
             do_mass_cutoff = False
 
     # Account for the distance
-    absolute_sensitivity = sensitivity - 5 * np.log10(cat_dist * (10 ** 5))
+    absolute_sensitivity = sensitivity - 5 * np.log10(galaxy_cat['Dist'] * (10 ** 5))
 
     absolute_sensitivity_lum = mag.f_nu_from_magAB(absolute_sensitivity)
-    distance_factor = np.zeros(cat_id.shape[0])
+    distance_factor = np.zeros(len(galaxy_cat))
 
     distance_factor[:] = ((maxL - absolute_sensitivity_lum) / (maxL - minL))
     distance_factor[min_dist_factor > (maxL - absolute_sensitivity_lum) / (maxL - minL)] = min_dist_factor
@@ -191,7 +181,7 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     distance_factor[absolute_sensitivity > maxL] = min_dist_factor
 
     # Sort galaxies by probability
-    ranking_idx = np.argsort(p*luminosity_norm*distance_factor)[::-1]
+    ranking_idx = np.argsort(p*luminosity_norm*distance_factor, kind="stable")[::-1]
 
     # # Count galaxies that constitute 50% of the probability (~0.5*0.98)
     # sum = 0
@@ -222,13 +212,13 @@ def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone
     galaxylist = np.ndarray((n, 7))
     for i in range(ranking_idx.shape[0])[:n]:
         ind = ranking_idx[i]
-        galaxylist[i, :] = [cat_id[ind], cat_ra[ind], cat_dec[ind], cat_dist[ind], cat_Bmag[ind],
+        galaxylist[i, :] = [galaxy_cat[ind]['ID'], galaxy_cat[ind]['RA'], galaxy_cat[ind]['Dec'], galaxy_cat[ind]['Dist'], galaxy_cat[ind]['Bmag'],
                             score[ind], distance_factor[ind]]
 
         # Update galaxy table in SQL database:
         lvc_galaxy_dict = {'voeventid': '(SELECT MAX(id) from voevent_lvc)',
                            'score': score[ind],
-                           'gladeid': cat_id[ind]}
+                           'gladeid': galaxy_cat[ind]['ID']}
         mysql_update.insert_values('lvc_galaxies', lvc_galaxy_dict)
 
     return galaxylist, ra_maxprob, dec_maxprob

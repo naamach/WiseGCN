@@ -213,7 +213,7 @@ mysql> GRANT FILE ON *.* TO gcn@localhost;
 The `wisegcn` code uses a reduced version of the catalog, stored in `.npy` format.
 To create it, first export the selected columns to a `.csv` file:
 ```
-mysql> SELECT glade_id, ra0, dec0, ifnull(dist, -1), ifnull(bmag, 0)
+mysql> SELECT glade_id, ra0, dec0, ifnull(dist, "None"), ifnull(bmag, "None")
 	FROM glade_catalog
 	INTO OUTFILE '/var/lib/mysql-files/glade_2.3_RA_Dec.csv'
 	FIELDS TERMINATED BY ','
