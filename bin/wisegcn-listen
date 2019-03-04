@@ -18,7 +18,8 @@ def init_log(filename="pygcn.log"):
     gcn_log.addHandler(h)
 
     # log file handler
-    h = logging.FileHandler(filename, "w", encoding=None, delay="true")
+    h = logging.handlers.TimedRotatingFileHandler(filename, when="midnight", interval=1, encoding=None, delay="true")
+    h.suffix = "%Y%m%d"
     h.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
         "%(asctime)s - %(levelname)s [%(filename)s:%(lineno)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
