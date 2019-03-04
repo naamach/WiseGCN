@@ -2,6 +2,7 @@
 import gcn
 from wisegcn.handler import process_gcn
 import logging
+from logging.handlers import TimedRotatingFileHandler
 
 
 def init_log(filename="pygcn.log"):
@@ -18,7 +19,7 @@ def init_log(filename="pygcn.log"):
     gcn_log.addHandler(h)
 
     # log file handler
-    h = logging.handlers.TimedRotatingFileHandler(filename, when="midnight", interval=1, encoding=None, delay="true")
+    h = TimedRotatingFileHandler(filename, when="midnight", interval=1, encoding=None, delay="true")
     h.suffix = "%Y%m%d"
     h.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
