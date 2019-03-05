@@ -73,7 +73,7 @@ def process_gcn(payload, root):
         role = 'observation'
 
     if root.attrib['role'] != role:
-        log.info('Not {}, aborting.'.format(role))
+        logging.info('Not {}, aborting.'.format(role))
         return
 
     ivorn = root.attrib['ivorn']
