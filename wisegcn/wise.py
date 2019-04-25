@@ -59,7 +59,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
             is_observe, airmass, ha = is_observable_in_interval(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,
                                                     lon=config.getfloat('WISE', 'LON')*u.deg,
                                                     alt=config.getfloat('WISE', 'ALT')*u.m,
-                                                    t=t,
+                                                    t1=t, t2=t_sunrise,
                                                     ha_min=config.getfloat(telescopes[tel], 'HOURANGLE_MIN')*u.hourangle,
                                                     ha_max=config.getfloat(telescopes[tel], 'HOURANGLE_MAX')*u.hourangle,
                                                     airmass_min=config.getfloat(telescopes[tel], 'AIRMASS_MIN'),
