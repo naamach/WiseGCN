@@ -90,10 +90,12 @@ def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hour
     observable = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max, airmass_min, airmass_max,
                                return_values=False)
     i = 1
+    print(len(t_vec))
     while (not observable) and (i < len(t_vec)):
         observable, airmass, ha = is_observable(ra, dec, lat, lon, alt, t_vec[i], ha_min, ha_max, airmass_min,
                                                 airmass_max, return_values=True)
         i = i + 1
+        print(i)
 
     if return_values:
         return observable, airmass, ha

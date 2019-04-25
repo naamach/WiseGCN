@@ -41,6 +41,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                              alt=config.getfloat('WISE', 'ALT')*u.m,
                              t=t,
                              sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
+    log.debug("Now/sunset = {}, sunrise = {}".format(t, t_sunrise))
 
     telescopes = config.get('WISE', 'TELESCOPES').split(',')
 
