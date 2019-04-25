@@ -15,13 +15,34 @@ def is_night(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
     return True
 
 
-def next_night(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
-    """when is next night?"""
+def next_sunset(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
+    """when is next sunset?"""
     obs = EarthLocation(lat=lat, lon=lon, height=alt)
-    t_vec = t + np.arange(0, 12*60, 1) * u.minute
+    t_vec = t + np.arange(0, 24*60, 1) * u.minute
     sun_altaz = get_sun(t_vec).transform_to(AltAz(obstime=t_vec, location=obs))
-    night_idx = np.argmax(sun_altaz.alt < sun_alt_twilight)
-    return t_vec[night_idx]
+    night_idx = np.where(sun_altaz.alt < sun_alt_twilight)[0]
+    if night_idx[0] != 0:
+        # Sun hasn't set yet:
+        sunset_idx = night_idx[0]
+    else:
+        # it's night now, finding next sunset:
+        sunset_idx = night_idx[np.where(np.diff(night_idx) > 1)[0] + 1]
+    return t_vec[sunset_idx]
+
+
+def next_sunrise(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
+    """when is next sunrise?"""
+    obs = EarthLocation(lat=lat, lon=lon, height=alt)
+    t_vec = t + np.arange(0, 24*60, 1) * u.minute
+    sun_altaz = get_sun(t_vec).transform_to(AltAz(obstime=t_vec, location=obs))
+    night_idx = np.where(sun_altaz.alt > sun_alt_twilight)[0]
+    if night_idx[0] != 0:
+        # it's night now, finding next sunrise:
+        sunrise_idx = night_idx[0] - 1
+    else:
+        # it's day now, finding next sunrise:
+        sunrise_idx = night_idx[np.where(np.diff(night_idx) > 1)[0]]
+    return t_vec[sunrise_idx]
 
 
 def calc_airmass(ra, dec, lat, lon, alt, t=Time.now()):
@@ -60,3 +81,21 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
         return True, airmass, np.double(ha)
     else:
         return True
+
+
+def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hourangle, ha_max=4.6*u.hourangle,
+                  airmass_min=1.02, airmass_max=3, return_values=False):
+    t_vec = t1 + np.arange(0, (t2-t1).to(u.minute), 1) * u.minute
+
+    observable = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max, airmass_min, airmass_max,
+                               return_values=False)
+    i = 1
+    while (not observable) and (i < len(t_vec)):
+        observable, airmass, ha = is_observable(ra, dec, lat, lon, alt, t_vec[i], ha_min, ha_max, airmass_min,
+                                                airmass_max, return_values=True)
+        i = i + 1
+
+    if return_values:
+        return observable, airmass, ha
+    else:
+        return observable

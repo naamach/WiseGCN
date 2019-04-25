@@ -1,7 +1,7 @@
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.time import Time
-from wisegcn.observing_tools import is_night, next_night, is_observable
+from wisegcn.observing_tools import is_night, next_sunset, next_sunrise, is_observable_in_interval
 from configparser import ConfigParser
 from schedulertml import rtml
 from wisegcn.email_alert import send_mail
@@ -28,13 +28,19 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                     t=t,
                     sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg):
         log.info("Daytime at Wise! Preparing a plan for next sunset.")
-        t = next_night(lat=config.getfloat('WISE', 'LAT')*u.deg,
-                    lon=config.getfloat('WISE', 'LON')*u.deg,
-                    alt=config.getfloat('WISE', 'ALT')*u.m,
-                    t=t,
-                    sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
+        t = next_sunset(lat=config.getfloat('WISE', 'LAT')*u.deg,
+                        lon=config.getfloat('WISE', 'LON')*u.deg,
+                        alt=config.getfloat('WISE', 'ALT')*u.m,
+                        t=t,
+                        sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
     else:
         log.info("It's nighttime at Wise! Preparing a plan for NOW.")
+
+    t_sunrise = next_sunrise(lat=config.getfloat('WISE', 'LAT')*u.deg,
+                             lon=config.getfloat('WISE', 'LON')*u.deg,
+                             alt=config.getfloat('WISE', 'ALT')*u.m,
+                             t=t,
+                             sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
 
     telescopes = config.get('WISE', 'TELESCOPES').split(',')
 
@@ -44,23 +50,13 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
         root = rtml.init(name=config.get('OBSERVING', 'USER'),
                          email=config.get('OBSERVING', 'EMAIL'))
 
-        root = rtml.add_request(root,
-                                request_id=filename,
-                                bestefforts=config.get('OBSERVING', 'BESTEFFORTS'),
-                                user=config.get('OBSERVING', 'USER'),
-                                description=config.get('OBSERVING', 'DESCRIPTION'),
-                                project=config.get('OBSERVING', 'PROJECT'),
-                                airmass_min=config.get(telescopes[tel], 'AIRMASS_MIN'),
-                                airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
-                                hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
-                                hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
-
         log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
 
         for i in range(tel, galaxies.shape[0], len(telescopes)):
+
             ra = Angle(galaxies[i, 1] * u.deg)
             dec = Angle(galaxies[i, 2] * u.deg)
-            is_observe, airmass, ha = is_observable(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,
+            is_observe, airmass, ha = is_observable_in_interval(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,
                                                     lon=config.getfloat('WISE', 'LON')*u.deg,
                                                     alt=config.getfloat('WISE', 'ALT')*u.m,
                                                     t=t,
@@ -79,8 +75,19 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
                         airmass, ha, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
+                root = rtml.add_request(root,
+                                        request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
+                                        bestefforts=config.get('OBSERVING', 'BESTEFFORTS'),
+                                        user=config.get('OBSERVING', 'USER'),
+                                        description=config.get('OBSERVING', 'DESCRIPTION'),
+                                        project=config.get('OBSERVING', 'PROJECT'),
+                                        airmass_min=config.get(telescopes[tel], 'AIRMASS_MIN'),
+                                        airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
+                                        hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
+                                        hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
+
                 rtml.add_target(root,
-                                request_id=filename,
+                                request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
                                 ra=ra.to_string(unit=u.degree, decimal=True),
                                 dec=dec.to_string(unit=u.degree, decimal=True, alwayssign=True),
                                 name="GladeID_{:.0f}".format(galaxies[i, 0]))
