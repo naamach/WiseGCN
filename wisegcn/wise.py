@@ -87,7 +87,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
                                         hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'),
-                                        priority=min(max_galaxies, galaxies.shape[0])-i)
+                                        priority=str(min(max_galaxies, galaxies.shape[0])-i))
 
                 rtml.add_target(root,
                                 request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
