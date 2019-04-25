@@ -22,6 +22,13 @@ $ pip install git+https://github.com/naamach/wisegcn.git
 ```
 Setup the `mysql` database according to [these instructions](docs/mysql.md).
 
+
+#### Upgrading
+To upgrade `wisegcn` run:
+```
+$ pip install git+https://github.com/naamach/wisegcn.git --upgrade
+```
+
 #### The configuration file
 
 Finally, you will have to provide `wisegcn` with the database credentials and point it to the catalog file and to the directory where you want it to store the event `FITS` files.
