@@ -44,6 +44,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
     log.debug("Now/sunset = {}, sunrise = {}".format(t, t_sunrise))
 
     telescopes = config.get('WISE', 'TELESCOPES').split(',')
+    max_galaxies = config.getint('GALAXIES', 'MAXGALAXIESPLAN')  # maximal number of galaxies to use in observation plan
 
     nothing_to_observe = True
     for tel in range(0, len(telescopes)):
@@ -53,7 +54,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
 
         log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
 
-        for i in range(tel, galaxies.shape[0], len(telescopes)):
+        for i in range(tel, min(max_galaxies, galaxies.shape[0]), len(telescopes)):
 
             ra = Angle(galaxies[i, 1] * u.deg)
             dec = Angle(galaxies[i, 2] * u.deg)
@@ -85,7 +86,8 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                                         airmass_min=config.get(telescopes[tel], 'AIRMASS_MIN'),
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
-                                        hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
+                                        hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'),
+                                        priority=min(max_galaxies, galaxies.shape[0])-i)
 
                 rtml.add_target(root,
                                 request_id="GladeID_{:.0f}".format(galaxies[i, 0]),

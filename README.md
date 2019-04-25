@@ -76,6 +76,7 @@ RELAXED_NSIGMAS_IN_D = 5
 COMPLETENESS = 0.5
 MINGALAXIES = 100
 MAXGALAXIES = 500 ; number of best galaxies to use
+MAXGALAXIESPLAN = 100 ; maximal number of galaxies per observation plan
 MINMAG = -12 ; magnitude of event in r-band
 MAXMAG = -17 ; magnitude of event in r-band
 SENSITIVITY = 22
