@@ -87,6 +87,10 @@ def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hour
                   airmass_min=1.02, airmass_max=3, return_values=False):
     t_vec = t1 + np.arange(0, ((t2-t1).to(u.minute)).value, 1) * u.minute
 
+    if return_values:
+        # default values
+        airmass = 0
+        ha = 0
     observable = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max, airmass_min, airmass_max,
                                return_values=False)
     i = 1
