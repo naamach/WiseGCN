@@ -110,7 +110,8 @@ EXPTIME = 300
 BINNING = 1
 HOST = c28_computer_name ; leave blank to skip plan upload to remote host
 USER = username
-PATH = C:\cygwin64\home\username\
+CYGWIN_PATH = C:\cygwin64\home\username\
+PATH = /home/username/
 
 [C18]
 AIRMASS_MIN = 1
@@ -122,7 +123,8 @@ EXPTIME = 300
 BINNING = 1
 HOST = c18_computer_name ; leave blank to skip plan upload to remote host
 USER = username
-PATH = C:\cygwin64\home\username\
+CYGWIN_PATH = C:\cygwin64\home\username\
+PATH = /home/username/
 
 [1m]
 AIRMASS_MIN = 1
@@ -134,7 +136,8 @@ EXPTIME = 300
 BINNING = 1
 HOST = 1m_computer_name ; leave blank to skip plan upload to remote host
 USER = username
-PATH = C:\cygwin64\home\username\
+CYGWIN_PATH = C:\cygwin64\home\username\
+PATH = /home/username/
 ```
 
 NOTE: To find the `mysql` socket, run:

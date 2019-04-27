@@ -135,8 +135,8 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                 result = rtml.import_to_remote_scheduler(rtml_filename,
                                                          username=config.get(telescopes[tel], 'USER'),
                                                          remote_host=config.get(telescopes[tel], 'HOST'),
-                                                         remote_path=None,
-                                                         cygwin_path=config.get(telescopes[tel], 'PATH'))
+                                                         remote_path=config.get(telescopes[tel], 'PATH'),
+                                                         cygwin_path=config.get(telescopes[tel], 'CYGWIN_PATH'))
                 log.info(result)
 
     return
