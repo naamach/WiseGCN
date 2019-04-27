@@ -146,7 +146,7 @@ def process_gcn(payload, root):
     galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
 
     # Create Wise plan
-    wise.process_galaxy_list(galaxies, filename=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
+    wise.process_galaxy_list(galaxies, alertname=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
 
     # Finish and delete logger
     log.info("Done.")

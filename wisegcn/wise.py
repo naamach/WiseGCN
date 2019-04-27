@@ -11,7 +11,7 @@ config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 
-def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=None, log=None):
+def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None, log=None):
     """Get the full galaxy list, and find which are good to observe at Wise"""
 
     if log is None:
@@ -82,7 +82,7 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
                                         bestefforts=config.get('OBSERVING', 'BESTEFFORTS'),
                                         user=config.get('OBSERVING', 'USER'),
                                         description=config.get('OBSERVING', 'DESCRIPTION'),
-                                        project=config.get('OBSERVING', 'PROJECT'),
+                                        project=alertname,
                                         airmass_min=config.get(telescopes[tel], 'AIRMASS_MIN'),
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
@@ -112,18 +112,18 @@ def process_galaxy_list(galaxies, filename='galaxies', ra_event=None, dec_event=
             log.info("Nothing to observe.")
             send_mail(subject="[GW@Wise] Nothing to observe",
                       text="Nothing to observe for alert {}.\nEvent most probable at RA={}, Dec={}."
-                      .format(filename,
+                      .format(alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                               dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)))
 
         else:
-            rtml_filename = config.get('WISE', 'PATH') + filename + '_' + telescopes[tel] + '.xml'
+            rtml_filename = config.get('WISE', 'PATH') + alertname + '_' + telescopes[tel] + '.xml'
             rtml.write(root, rtml_filename)
 
-            log.info("Created observing plan for alert {}.".format(filename))
+            log.info("Created observing plan for alert {}.".format(alertname))
             send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
                       text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
-                      .format(telescopes[tel], filename,
+                      .format(telescopes[tel], alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                               dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)),
                       files=[rtml_filename])

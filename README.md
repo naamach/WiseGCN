@@ -89,8 +89,7 @@ SUN_ALT_MAX = -12
 BESTEFFORTS = 1
 USER = New Observer
 EMAIL = user@example.com
-PROJECT = GW followup
-DESCRIPTION = 
+sDESCRIPTION = 
 SOLVE = 1
 
 [WISE]
@@ -106,7 +105,7 @@ AIRMASS_MIN = 1.02  ; the shutter blocks the CCD above 80deg
 AIRMASS_MAX = 3
 HOURANGLE_MIN = -4.6
 HOURANGLE_MAX = 4.6
-FILTER = ExoP
+FILTER = Luminance
 EXPTIME = 300
 BINNING = 1
 HOST = c28_computer_name
@@ -114,9 +113,9 @@ HOST = c28_computer_name
 [C18]
 AIRMASS_MIN = 1
 AIRMASS_MAX = 3
-HOURANGLE_MIN = -12
-HOURANGLE_MAX = 12
-FILTER = Clear
+HOURANGLE_MIN = -5.3
+HOURANGLE_MAX = 5.3
+FILTER = clearx
 EXPTIME = 300
 BINNING = 1
 HOST = c18_computer_name
