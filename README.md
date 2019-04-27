@@ -109,6 +109,8 @@ FILTER = Luminance
 EXPTIME = 300
 BINNING = 1
 HOST = c28_computer_name
+USER = username
+PATH = C:\cygwin64\home\username\
 
 [C18]
 AIRMASS_MIN = 1
@@ -119,6 +121,8 @@ FILTER = clearx
 EXPTIME = 300
 BINNING = 1
 HOST = c18_computer_name
+USER = username
+PATH = C:\cygwin64\home\username\
 
 [1m]
 AIRMASS_MIN = 1
@@ -129,6 +133,8 @@ FILTER = Clear
 EXPTIME = 300
 BINNING = 1
 HOST = 1m_computer_name
+USER = username
+PATH = C:\cygwin64\home\username\
 ```
 
 NOTE: To find the `mysql` socket, run:

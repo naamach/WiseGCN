@@ -128,4 +128,15 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                               dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)),
                       files=[rtml_filename])
 
+            # upload to remote Scheduler
+            if not config.get(telescopes[tel], 'HOST'):
+                log.info("No host name was provided, skipping plan upload.")
+            else:
+                result = rtml.import_to_remote_scheduler(rtml_filename,
+                                                         username=config.get(telescopes[tel], 'USER'),
+                                                         remote_host=config.get(telescopes[tel], 'HOST'),
+                                                         remote_path=None,
+                                                         cygwin_path=config.get(telescopes[tel], 'PATH'))
+                log.info(result)
+
     return
