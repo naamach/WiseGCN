@@ -108,7 +108,7 @@ HOURANGLE_MAX = 4.6
 FILTER = Luminance
 EXPTIME = 300
 BINNING = 1
-HOST = c28_computer_name
+HOST = c28_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 PATH = C:\cygwin64\home\username\
 
@@ -120,7 +120,7 @@ HOURANGLE_MAX = 5.3
 FILTER = clearx
 EXPTIME = 300
 BINNING = 1
-HOST = c18_computer_name
+HOST = c18_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 PATH = C:\cygwin64\home\username\
 
@@ -132,7 +132,7 @@ HOURANGLE_MAX = 12
 FILTER = Clear
 EXPTIME = 300
 BINNING = 1
-HOST = 1m_computer_name
+HOST = 1m_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 PATH = C:\cygwin64\home\username\
 ```
