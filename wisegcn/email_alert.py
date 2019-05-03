@@ -78,8 +78,9 @@ def format_html(text, img, img_width=300):
     return html
 
 
-def format_alert(params, img_width=300):
+def format_alert(params):
     from astropy.time import Time
+    import numpy as np
 
     # healpix map image path
     image_url = params["skymap_fits"][0:params["skymap_fits"].find("fits.gz")]
@@ -92,21 +93,24 @@ def format_alert(params, img_width=300):
       <head></head>
       <body>
         <p>
-            <bf>{params["AlertType"]} Alert</bf></br>
-            </br>
-            <bf>GraceID:</bf> <a href="{params["EventPage"]}">{params["GraceID"]}</a></br>
-            <bf>Event UT:</bf> {params["isotime"]}</br>
-            <bf>Alert UT:</bf> {params["date_ivorn"]}</br>
-            <bf>Ingestion UT:</bf> {t.value}</br>
-            <bf>FAR [yr<sup>-1</sup>]:</bf> {params["FAR"]}</br>
-            <bf>Detectors:</bf> {params["Instruments"]}</br>
-            <bf>Nature [BNS / NSBH / BBH / Terrestrial]:</bf> {params["BNS"]*100}% / {params["NSBH"]*100}% / {params["BBH"]*100}% / {params["Terrestrial"]*100}%</br>
-            <bf>Probability of NS Component:</bf> {params["HasNS"]*100}%</br>
-            <bf>Probability of Remnant Emission:</bf> {params["HasRemnant"]*100}%</br>
+            <b>{params["AlertType"]} Alert</b><br>
+            <br>
+            <b>GraceID:</b> <a href="{params["EventPage"]}">{params["GraceID"]}</a><br>
+            <b>Event UT:</b> {params["isotime"]}<br>
+            <b>Alert UT:</b> {params["date_ivorn"]}<br>
+            <b>Ingestion UT:</b> {t.value}<br>
+            <b>FAR [yr<sup>-1</sup>]:</b> {params["FAR"]}<br>
+            <b>Detectors:</b> {params["Instruments"]}<br>
+            <b>Nature [BNS / NSBH / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
+                {np.round(float(params["NSBH"])*100, 1)}% / 
+                {np.round(float(params["BBH"])*100, 1)}% / 
+                {np.round(float(params["Terrestrial"])*100, 1)}%<br>
+            <b>Probability of NS Component:</b> {np.round(float(params["HasNS"])*100, 1)}%<br>
+            <b>Probability of Remnant Emission:</b> {np.round(float(params["HasRemnant"])*100, 1)}%<br>
         </p>
         <p>
-            <img src="{image_url+"png"}" width="{img_width}" border="0"> 
-            <img src="{image_url+"volume.png"}" width="{img_width}" border="0">
+            <img src="{image_url+"png"}" width="500" border="0"> 
+            <img src="{image_url+"volume.png"}" width="300" border="0">
         </p>
       </body>
     </html>

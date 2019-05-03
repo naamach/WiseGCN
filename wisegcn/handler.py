@@ -85,9 +85,9 @@ def process_gcn(payload, root):
         # Save alert to file
         with open(alerts_path + filename + '.xml', "wb") as f:
             f.write(payload)
-        log.info("Event {} retracted, doing nothing.".format(ivorn))
-        send_mail(subject="[GW@Wise] LVC event retracted",
-                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(ivorn),
+        log.info("Event {} retracted, doing nothing.".format(filename))
+        send_mail(subject="[GW@Wise] {} GCN/LVC event retracted".format(filename),
+                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(filename),
                   files=[alerts_path + filename + '.xml'])
         return
 
@@ -133,8 +133,8 @@ def process_gcn(payload, root):
     mysql_update.insert_voevent('voevent_lvc', params, log)
 
     # Send alert email
-    send_mail(subject="[GW@Wise] LVC alert received",
-              text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
+    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+              text="Attached {} GCN/LVC alert received, started processing.".format(filename),
               html=format_alert(params),
               files=[alerts_path+filename+'.xml'])
 
