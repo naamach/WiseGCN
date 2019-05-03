@@ -194,6 +194,33 @@ root = lxml.etree.fromstring(payload)
 process_gcn(payload, root)
 ```
 
+## Additional utilities
+
+You can use `wisegcn` to check the healpix probability of a specific location (based on RA, Dec only, not taking the distance into account). These utilities are also Python 2.7 compatible.
+
+### Get healpix probability based on location
+
+```
+from wisegcn.utils import get_coo_healpix_probability
+
+ra = 123.45  # [deg]
+dec = 12.345  # [deg]
+skymap = "/path/to/bayestar.fits.gz"
+p = get_coo_healpix_probability(ra, dec, skymap)
+```
+
+### Get healpix probability based on GladeID
+
+This part assumes you have configured the `[CATALOG]` part in the `config.ini` file, and the Glade catalog `.npy` file.
+
+```
+from wisegcn.utils import get_galaxy_healpix_probability
+
+glade_id = 12345
+skymap = "/path/to/bayestar.fits.gz"
+p = get_coo_healpix_probability(glade_id, skymap)
+```
+
 ## Acknowledgments
 Leo P. Singer, Scott Barthelmy, David Guevel, Michael Zalzman, Sergiy Vasylyev.
 
