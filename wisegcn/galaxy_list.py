@@ -41,7 +41,7 @@ alpha = config.getfloat('GALAXIES', 'ALPHA')
 MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
 
 
-def find_galaxy_list(skymap_path, log=None, completeness=completenessp, credzone=0.99, relaxed_credzone=0.99995):
+def find_galaxy_list(skymap_path, log=None):
     if log is None:
         log = logging.getLogger(__name__)
 
