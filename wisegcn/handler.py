@@ -2,7 +2,7 @@ import gcn.notice_types
 from astropy.utils.data import download_file
 import shutil
 import ntpath
-from wisegcn.email_alert import send_mail
+from wisegcn.email_alert import send_mail, format_alert
 from wisegcn import galaxy_list
 from wisegcn import wise
 from wisegcn import mysql_update
@@ -135,6 +135,7 @@ def process_gcn(payload, root):
     # Send alert email
     send_mail(subject="[GW@Wise] LVC alert received",
               text="Attached GCN/LVC alert {} received, started processing.".format(ivorn),
+              html=format_alert(params),
               files=[alerts_path+filename+'.xml'])
 
     # Download the HEALPix sky map FITS file.

@@ -11,7 +11,7 @@ config = ConfigParser(inline_comment_prefixes=';')
 config.read('config.ini')
 
 
-def send_mail(subject, text,
+def send_mail(subject, text, html="",
               send_from=config.get('EMAIL', 'FROM'),
               send_to=[e.strip() for e in config.get('EMAIL', 'TO').split(',')],
               cc_to=[e.strip() for e in config.get('EMAIL', 'CC').split(',')] if config.has_option('EMAIL', 'CC') else '',
@@ -34,7 +34,9 @@ def send_mail(subject, text,
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(text))
+    msg.attach(MIMEText(text, 'plain'))
+    if not (not html):
+        msg.attach(MIMEText(html, 'html'))
 
     for f in files or []:
         with open(f, "rb") as fil:
@@ -54,3 +56,60 @@ def send_mail(subject, text,
     except Exception as e:
         code, msg = e.args
         log.error("Failed to send email! Error {}: {}".format(code, msg))
+
+    return
+
+
+def format_html(text, img, img_width=300):
+    html = f"""\
+    <html>
+      <head></head>
+      <body>
+        <p>
+            {text}
+        </p>
+        <p>
+            <img src="{img}" width="{img_width}" border="0">
+        </p>
+      </body>
+    </html>
+    """
+
+    return html
+
+
+def format_alert(params, img_width=300):
+    from astropy.time import Time
+
+    # healpix map image path
+    image_url = params["skymap_fits"][0:params["skymap_fits"].find("fits.gz")]
+
+    t = Time.now()
+    t.format = "iso"
+
+    html = f"""\
+    <html>
+      <head></head>
+      <body>
+        <p>
+            <bf>{params["AlertType"]} Alert</bf></br>
+            </br>
+            <bf>GraceID:</bf> <a href="{params["EventPage"]}">{params["GraceID"]}</a></br>
+            <bf>Event UT:</bf> {params["isotime"]}</br>
+            <bf>Alert UT:</bf> {params["date_ivorn"]}</br>
+            <bf>Ingestion UT:</bf> {t.value}</br>
+            <bf>FAR [yr<sup>-1</sup>]:</bf> {params["FAR"]}</br>
+            <bf>Detectors:</bf> {params["Instruments"]}</br>
+            <bf>Nature [BNS / NSBH / BBH / Terrestrial]:</bf> {params["BNS"]*100}% / {params["NSBH"]*100}% / {params["BBH"]*100}% / {params["Terrestrial"]*100}%</br>
+            <bf>Probability of NS Component:</bf> {params["HasNS"]*100}%</br>
+            <bf>Probability of Remnant Emission:</bf> {params["HasRemnant"]*100}%</br>
+        </p>
+        <p>
+            <img src="{image_url+"png"}" width="{img_width}" border="0"> 
+            <img src="{image_url+"volume.png"}" width="{img_width}" border="0">
+        </p>
+      </body>
+    </html>
+    """
+
+    return html
