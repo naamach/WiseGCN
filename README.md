@@ -218,7 +218,7 @@ from wisegcn.utils import get_galaxy_healpix_probability
 
 glade_id = 12345
 skymap = "/path/to/bayestar.fits.gz"
-p = get_coo_healpix_probability(glade_id, skymap)
+p = get_galaxy_healpix_probability(glade_id, skymap)
 ```
 
 ## Acknowledgments
