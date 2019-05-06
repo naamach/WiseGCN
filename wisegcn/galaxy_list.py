@@ -22,7 +22,7 @@ credzone = config.getfloat('GALAXIES', 'CREDZONE')  # Localization probability t
 relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
 nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distnace
 relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
-completenessp = config.getfloat('GALAXIES', 'COMPLETENESS')
+completeness = config.getfloat('GALAXIES', 'COMPLETENESS')
 min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies to output
 max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # maximal number of galaxies to use
 
