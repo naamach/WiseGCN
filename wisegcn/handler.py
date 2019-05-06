@@ -147,7 +147,7 @@ def process_gcn(payload, root):
     # Create the galaxy list
     galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
     # Save galaxy list to csv file and send it
-    ascii.write(galaxies, "galaxy_list.csv", format="csv")
+    ascii.write(galaxies, "galaxy_list.csv", format="csv", names=["GladeID", "RA", "Dec", "Dist", "Bmag", "Score", "Distance factor"])
     send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
               text="{} GCN/LVC alert galaxy list is attached.".format(filename),
               files=["galaxy_list.csv"])
