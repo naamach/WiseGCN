@@ -1,5 +1,6 @@
 import gcn.notice_types
 from astropy.utils.data import download_file
+from astropy.io import ascii
 import shutil
 import ntpath
 from wisegcn.email_alert import send_mail, format_alert
@@ -145,6 +146,11 @@ def process_gcn(payload, root):
 
     # Create the galaxy list
     galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
+    # Save galaxy list to csv file and send it
+    ascii.write(galaxies, "galaxy_list.csv", format="csv")
+    send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
+              text="{} GCN/LVC alert galaxy list is attached.".format(filename),
+              files=["galaxy_list.csv"])
 
     # Create Wise plan
     wise.process_galaxy_list(galaxies, alertname=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
