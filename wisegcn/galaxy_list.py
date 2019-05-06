@@ -12,36 +12,36 @@ from astropy.coordinates import Angle
 from astropy.table import Table
 from scipy.stats import norm
 
-# settings:
-config = ConfigParser(inline_comment_prefixes=';')
-config.read('config.ini')
-cat_file = config.get('CATALOG', 'PATH')+config.get('CATALOG', 'NAME')+'.npy'  # galaxy catalog file
-
-# parameters:
-credzone = config.getfloat('GALAXIES', 'CREDZONE')  # Localization probability to consider credible
-relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
-nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distnace
-relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
-completeness = config.getfloat('GALAXIES', 'COMPLETENESS')
-min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies to output
-max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # maximal number of galaxies to use
-
-# magnitude of event in r-band. values are value from Barnes... +-1.5 mag
-minmag = config.getfloat('GALAXIES', 'MINMAG')  # Estimated brightest KN abs mag
-maxmag = config.getfloat('GALAXIES', 'MAXMAG')  # Estimated faintest KN abs mag
-sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')  # Estimatest faintest app mag we can see
-
-min_dist_factor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
-
-minL = mag.f_nu_from_magAB(minmag)
-maxL = mag.f_nu_from_magAB(maxmag)
-
-# Schechter function parameters:
-alpha = config.getfloat('GALAXIES', 'ALPHA')
-MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
-
 
 def find_galaxy_list(skymap_path, log=None):
+    # settings:
+    config = ConfigParser(inline_comment_prefixes=';')
+    config.read('config.ini')
+    cat_file = config.get('CATALOG', 'PATH') + config.get('CATALOG', 'NAME') + '.npy'  # galaxy catalog file
+
+    # parameters:
+    credzone = config.getfloat('GALAXIES', 'CREDZONE')  # Localization probability to consider credible
+    relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
+    nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distnace
+    relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
+    completeness = config.getfloat('GALAXIES', 'COMPLETENESS')
+    min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies to output
+    max_galaxies = config.getint('GALAXIES', 'MAXGALAXIES')  # maximal number of galaxies to use
+
+    # magnitude of event in r-band. values are value from Barnes... +-1.5 mag
+    minmag = config.getfloat('GALAXIES', 'MINMAG')  # Estimated brightest KN abs mag
+    maxmag = config.getfloat('GALAXIES', 'MAXMAG')  # Estimated faintest KN abs mag
+    sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')  # Estimatest faintest app mag we can see
+
+    min_dist_factor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
+
+    minL = mag.f_nu_from_magAB(minmag)
+    maxL = mag.f_nu_from_magAB(maxmag)
+
+    # Schechter function parameters:
+    alpha = config.getfloat('GALAXIES', 'ALPHA')
+    MB_star = config.getfloat('GALAXIES', 'MB_STAR')  # random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
+
     if log is None:
         log = logging.getLogger(__name__)
 
