@@ -110,7 +110,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
-            send_mail(subject="[GW@Wise] Nothing to observe",
+            send_mail(subject=f"[GW@Wise] {alertname} Nothing to observe",
                       text="Nothing to observe for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
@@ -120,8 +120,8 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
             rtml_filename = config.get('WISE', 'PATH') + alertname + '_' + telescopes[tel] + '.xml'
             rtml.write(root, rtml_filename)
 
-            log.info("Created observing plan for alert {}.".format(alertname))
-            send_mail(subject="[GW@Wise] {} observing plan".format(telescopes[tel]),
+            log.info(f"Created observing plan for alert {alertname}.")
+            send_mail(subject=f"[GW@Wise] {alertname} {telescopes[tel]} observing plan",
                       text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(telescopes[tel], alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
