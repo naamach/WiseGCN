@@ -54,7 +54,8 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
         log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
 
-        for i in range(tel, min(max_galaxies, galaxies.shape[0]), len(telescopes)):
+        n_galaxies_in_plan = 0
+        for i in range(tel, galaxies.shape[0], len(telescopes)):
 
             ra = Angle(galaxies[i, 1] * u.deg)
             dec = Angle(galaxies[i, 2] * u.deg)
@@ -70,6 +71,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
             if is_observe:
                 nothing_to_observe = False
+                n_galaxies_in_plan += 1
                 log.debug(
                     "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}\t\tadded to plan!".format(
                         i + 1, galaxies[i, 0],
@@ -107,6 +109,10 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
                         airmass, ha, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+
+            if n_galaxies_in_plan >= max_galaxies:
+                # maximal number of galaxies per plan has been reached
+                break
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
