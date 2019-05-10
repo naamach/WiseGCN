@@ -130,14 +130,14 @@ def process_gcn(payload, root):
         description = description + ", " + item
     params['how_description'] = description
 
-    # Insert VOEvent to the database
-    mysql_update.insert_voevent('voevent_lvc', params, log)
-
     # Send alert email
     send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
               text="Attached {} GCN/LVC alert received, started processing.".format(filename),
               html=format_alert(params),
               files=[alerts_path+filename+'.xml'])
+
+    # Insert VOEvent to the database
+    mysql_update.insert_voevent('voevent_lvc', params, log)
 
     # Download the HEALPix sky map FITS file.
     tmp_path = download_file(params['skymap_fits'])
