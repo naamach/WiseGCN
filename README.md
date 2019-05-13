@@ -38,6 +38,9 @@ The file should look like that (see `config.ini.example` in the main directory):
 ; config.ini
 [GENERAL]
 TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
+BNS = True ; True - listen to binary neutron star alerts
+NSBH = True ; True - listen to black hole-neutron star alerts
+BBH = False ; True - listen to black hole-black hole alerts
 
 [LOG]
 PATH = /path/to/log/

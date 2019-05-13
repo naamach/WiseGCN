@@ -105,6 +105,15 @@ def process_gcn(payload, root):
         log.info('Not CBC, aborting.')
         return
 
+    # Respond only to specific merger types
+    if (config.getboolean("GENERAL", "BNS") & (params["BNS"] > 0)) | \
+            (config.getboolean("GENERAL", "NSBH") & (params["NSBH"] > 0)) | \
+            (config.getboolean("GENERAL", "BBH") & (params["BBH"] > 0)):
+        pass
+    else:
+        log.info("Not an interesting merger type, aborting.")
+        return
+
     # Save alert to file
     with open(alerts_path+filename+'.xml', "wb") as f:
         f.write(payload)
