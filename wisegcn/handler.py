@@ -106,9 +106,9 @@ def process_gcn(payload, root):
         return
 
     # Respond only to specific merger types
-    if (config.getboolean("GENERAL", "BNS") & (params["BNS"] > 0)) | \
-            (config.getboolean("GENERAL", "NSBH") & (params["NSBH"] > 0)) | \
-            (config.getboolean("GENERAL", "BBH") & (params["BBH"] > 0)):
+    if (config.getboolean("GENERAL", "BNS") & (float(params["BNS"]) > 0)) | \
+            (config.getboolean("GENERAL", "NSBH") & (float(params["NSBH"]) > 0)) | \
+            (config.getboolean("GENERAL", "BBH") & (float(params["BBH"]) > 0)):
         pass
     else:
         log.info("Not an interesting merger type, aborting.")
