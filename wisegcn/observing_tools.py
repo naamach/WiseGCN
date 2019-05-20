@@ -73,7 +73,7 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     airmass = calc_airmass(ra, dec, lat, lon, alt, t)
     if airmass <= airmass_min or airmass >= airmass_max:
         if return_values:
-            return False, airmass, 0, None
+            return False, airmass, -999, -999
         else:
             return False
 
@@ -81,7 +81,7 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     ha = calc_hourangle(ra, lon, t)
     if ha <= ha_min or ha >= ha_max:
         if return_values:
-            return False, airmass, np.double(ha), None
+            return False, airmass, np.double(ha), -999
         else:
             return False
 
@@ -105,8 +105,9 @@ def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hour
 
     if return_values:
         # default values
-        airmass = 0
-        ha = 0
+        airmass = -999
+        ha = -999
+        lunar_dist = -999
     observable = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max, airmass_min, airmass_max,
                                return_values=False)
     i = 1
