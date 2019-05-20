@@ -106,12 +106,14 @@ def process_gcn(payload, root):
         return
 
     # Respond only to specific merger types
-    if (config.getboolean("GENERAL", "BNS") & (float(params["BNS"]) > 0)) | \
-            (config.getboolean("GENERAL", "NSBH") & (float(params["NSBH"]) > 0)) | \
-            (config.getboolean("GENERAL", "BBH") & (float(params["BBH"]) > 0)):
+    if ((config.getfloat("GENERAL", "BNS_MIN") >= float(params["BNS"])) |
+            (config.getfloat("GENERAL", "NSBH_MIN") >= float(params["NSBH"])) |
+            (config.getfloat("GENERAL", "BBH_MIN") >= float(params["BBH"]))) & \
+            (config.getfloat("GENERAL", "TERRESTRIAL_MAX") <= float(params["Terrestrial"])) & \
+            (config.getfloat("GENERA", "FAR_MAX") <= float(params["FAR"])):
         pass
     else:
-        log.info("Not an interesting merger type, aborting.")
+        log.info("Uninteresting alert, aborting.")
         return
 
     # Save alert to file

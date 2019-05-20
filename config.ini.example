@@ -1,9 +1,11 @@
 ; config.ini
 [GENERAL]
 TEST = False ; True - listen ONLY test alerts, change to False to listen to real alerts
-BNS = True ; True - listen to binary neutron star alerts
-NSBH = True ; True - listen to black hole-neutron star alerts
-BBH = False ; True - listen to black hole-black hole alerts
+BNS_MIN = 0 ; minimal allowed probability of binary neutron star alerts
+NSBH_MIN = 0 ; minimal allowed probability of black hole-neutron star alerts
+BBH_MIN = 999 ; minimal allowed probability of black hole-black hole alerts
+TERRESTRIAL_MAX = 999 ; maximal allowed probability of terrestrial alerts
+FAR_MAX = 999 ; maximal allowed false alarm rate [1/yr]
 
 [LOG]
 PATH = /path/to/log/
