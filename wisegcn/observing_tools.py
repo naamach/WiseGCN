@@ -1,4 +1,4 @@
-from astropy.coordinates import SkyCoord, EarthLocation, AltAz, get_sun
+from astropy.coordinates import SkyCoord, EarthLocation, AltAz, get_sun, get_moon
 from astropy import units as u
 from astropy.time import Time
 import numpy as np
@@ -45,6 +45,14 @@ def next_sunrise(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
     return t_vec[sunrise_idx]
 
 
+def lunar_distance(ra, dec, lat, lon, alt, t=Time.now()):
+    """what is the lunar distance?"""
+    obs = EarthLocation(lat=lat, lon=lon, height=alt)
+    obj = SkyCoord(ra=ra, dec=dec, frame='icrs')
+    moon = get_moon(t, location=obs)
+    return obj.separation(moon)
+
+
 def calc_airmass(ra, dec, lat, lon, alt, t=Time.now()):
     obs = EarthLocation(lat=lat, lon=lon, height=alt)
     obj = SkyCoord(ra=ra, dec=dec, frame='icrs')
@@ -60,12 +68,12 @@ def calc_hourangle(ra, lon, t=Time.now()):
 
 
 def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle, ha_max=4.6*u.hourangle,
-                  airmass_min=1.02, airmass_max=3, return_values=False):
+                  airmass_min=1.02, airmass_max=3, min_lunar_distance=30*u.deg, return_values=False):
     # is the object visible?
     airmass = calc_airmass(ra, dec, lat, lon, alt, t)
     if airmass <= airmass_min or airmass >= airmass_max:
         if return_values:
-            return False, airmass, 0
+            return False, airmass, 0, None
         else:
             return False
 
@@ -73,18 +81,26 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     ha = calc_hourangle(ra, lon, t)
     if ha <= ha_min or ha >= ha_max:
         if return_values:
-            return False, airmass, np.double(ha)
+            return False, airmass, np.double(ha), None
+        else:
+            return False
+
+    # is the object far enough from the moon?
+    lunar_dist = lunar_distance(ra, dec, lat, lon, alt, t)
+    if lunar_dist < min_lunar_distance:
+        if return_values:
+            return False, airmass, np.double(ha), lunar_dist
         else:
             return False
 
     if return_values:
-        return True, airmass, np.double(ha)
+        return True, airmass, np.double(ha), lunar_dist
     else:
         return True
 
 
 def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hourangle, ha_max=4.6*u.hourangle,
-                  airmass_min=1.02, airmass_max=3, return_values=False):
+                  airmass_min=1.02, airmass_max=3, min_lunar_distance=30*u.deg, return_values=False):
     t_vec = t1 + np.arange(0, ((t2-t1).to(u.hour)).value, 1) * u.hour
 
     if return_values:
@@ -95,11 +111,11 @@ def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hour
                                return_values=False)
     i = 1
     while (not observable) and (i < len(t_vec)):
-        observable, airmass, ha = is_observable(ra, dec, lat, lon, alt, t_vec[i], ha_min, ha_max, airmass_min,
-                                                airmass_max, return_values=True)
+        observable, airmass, ha, lunar_dist = is_observable(ra, dec, lat, lon, alt, t_vec[i], ha_min, ha_max,
+                                                            airmass_min, airmass_max, min_lunar_distance, return_values=True)
         i = i + 1
 
     if return_values:
-        return observable, airmass, ha
+        return observable, airmass, ha, lunar_dist
     else:
         return observable

@@ -52,14 +52,14 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
         root = rtml.init(name=config.get('OBSERVING', 'USER'),
                          email=config.get('OBSERVING', 'EMAIL'))
 
-        log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tDist\tBmag\tScore\t\tDist factor")
+        log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tLunarDist\tDist\tBmag\tScore\t\tDist factor")
 
         n_galaxies_in_plan = 0
         for i in range(tel, galaxies.shape[0], len(telescopes)):
 
             ra = Angle(galaxies[i, 1] * u.deg)
             dec = Angle(galaxies[i, 2] * u.deg)
-            is_observe, airmass, ha = is_observable_in_interval(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,
+            is_observe, airmass, ha, lunar_dist = is_observable_in_interval(ra=ra, dec=dec, lat=config.getfloat('WISE', 'LAT')*u.deg,
                                                     lon=config.getfloat('WISE', 'LON')*u.deg,
                                                     alt=config.getfloat('WISE', 'ALT')*u.m,
                                                     t1=t, t2=t_sunrise,
@@ -67,17 +67,18 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                                                     ha_max=config.getfloat(telescopes[tel], 'HOURANGLE_MAX')*u.hourangle,
                                                     airmass_min=config.getfloat(telescopes[tel], 'AIRMASS_MIN'),
                                                     airmass_max=config.getfloat(telescopes[tel], 'AIRMASS_MAX'),
+                                                    min_lunar_distance=config.getfloat(telescopes[tel], 'MIN_LUNAR_DIST')*u.deg,
                                                     return_values=True)
 
             if is_observe:
                 nothing_to_observe = False
                 n_galaxies_in_plan += 1
                 log.debug(
-                    "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}\t\tadded to plan!".format(
+                    "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}\t\tadded to plan!".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
                 root = rtml.add_request(root,
                                         request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
@@ -104,11 +105,11 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                                  binning=config.get(telescopes[tel], 'BINNING'))
             else:
                 log.debug(
-                    "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}".format(
+                    "{}:\t{:.0f}\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.2f}\t{:.6g}\t\t{:.2f}".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
             if n_galaxies_in_plan >= max_galaxies:
                 # maximal number of galaxies per plan has been reached
