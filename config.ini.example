@@ -6,6 +6,8 @@ NSBH_MIN = 0 ; minimal allowed probability of black hole-neutron star alerts
 BBH_MIN = 999 ; minimal allowed probability of black hole-black hole alerts
 TERRESTRIAL_MAX = 999 ; maximal allowed probability of terrestrial alerts
 FAR_MAX = 999 ; maximal allowed false alarm rate [1/yr]
+AREA_MAX = 999999 ; [deg^2] maximal allowed sky area (if the localization is worse, drop the alert)
+AREA_CREDZONE = 0.9 ; localization probability to consider credible for AREA_MAX
 
 [LOG]
 PATH = /path/to/log/

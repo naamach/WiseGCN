@@ -7,6 +7,7 @@ from wisegcn.email_alert import send_mail, format_alert
 from wisegcn import galaxy_list
 from wisegcn import wise
 from wisegcn import mysql_update
+from wisegcn.utils import get_sky_area
 from configparser import ConfigParser
 import voeventparse as vp
 import logging
@@ -154,6 +155,14 @@ def process_gcn(payload, root):
     tmp_path = download_file(params['skymap_fits'])
     skymap_path = fits_path + filename + "_" + ntpath.basename(params['skymap_fits'])
     shutil.move(tmp_path, skymap_path)
+
+    # Respond only to alerts with reasonable localization
+    area = get_sky_area(skymap_path, credzone=config.getfloat("GENERAL", "AREA_CREDZONE"))
+    if area > config.getfloat("GENERAL", "AREA_MAX"):
+        log.info(f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2.""")
+        send_mail(subject="[GW@Wise] {} GCN/LVC event badly localized".format(filename),
+                  text=f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
+        return
 
     # Create the galaxy list
     galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)

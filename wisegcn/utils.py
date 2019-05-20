@@ -78,3 +78,36 @@ def get_galaxy_healpix_probability(glade_id, skymap_path):
     p = prob[galaxy_pix]
 
     return p
+
+
+def get_sky_area(skymap_path, credzone=0.5):
+    """
+    Returns the credzone sky area in degrees
+    :param skymap_path: path to skymap file
+    :param credzone: localization probability to consider credible
+    :return: credzone area in degrees
+    """
+
+    # Read the HEALPix sky map:
+    try:
+        prob, dist_mu, dist_sigma, dist_norm = hp.read_map(skymap_path, field=None, verbose=False)
+    except Exception:
+        print('Failed to read sky map!')
+
+    # Skymap parameters:
+    npix = len(prob)
+    nside = hp.npix2nside(npix)
+
+    # Find given percent probability zone (default is 99%):
+    prob_sum = 0
+    npix_credzone = 0
+
+    prob_sorted = np.sort(prob, kind="stable")
+    while prob_sum < credzone:
+        prob_sum = prob_sum + prob_sorted[-1]
+        prob_sorted = prob_sorted[:-1]
+        npix_credzone = npix_credzone + 1
+
+    area = npix_credzone * hp.nside2pixarea(nside, degrees=True)
+
+    return area
