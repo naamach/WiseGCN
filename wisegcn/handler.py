@@ -159,7 +159,7 @@ def process_gcn(payload, root):
     # Respond only to alerts with reasonable localization
     area = get_sky_area(skymap_path, credzone=config.getfloat("GENERAL", "AREA_CREDZONE"))
     if area > config.getfloat("GENERAL", "AREA_MAX"):
-        log.info(f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2.""")
+        log.info(f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
         send_mail(subject="[GW@Wise] {} GCN/LVC event badly localized".format(filename),
                   text=f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
         return
