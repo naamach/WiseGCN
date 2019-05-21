@@ -54,6 +54,10 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
         log.debug("Index\tGladeID\tRA\t\tDec\t\tAirmass\tHA\tLunarDist\tDist\tBmag\tScore\t\tDist factor")
 
+        csv_filename = f"{telescopes[tel]}_GalaxyList.csv"
+        fid = open(csv_filename, "w")
+        fid.write("Index,GladeID,RA,Dec,Airmass,HA,LunarDist,Dist,Bmag,Score,Dist factor\n")
+
         n_galaxies_in_plan = 0
         for i in range(tel, galaxies.shape[0], len(telescopes)):
 
@@ -78,7 +82,12 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                fid.write("{}:,{:.0f},{},{},{:+.2f},{:+.2f},{:.2f},{:.2f},{:.2f},{:.6g},{:.2f}\n".format(
+                        i + 1, galaxies[i, 0],
+                        ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
+                        dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
+                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
                 root = rtml.add_request(root,
                                         request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
@@ -109,7 +118,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
             if n_galaxies_in_plan >= max_galaxies:
                 # maximal number of galaxies per plan has been reached
@@ -127,13 +136,15 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
             rtml_filename = config.get('WISE', 'PATH') + alertname + '_' + telescopes[tel] + '.xml'
             rtml.write(root, rtml_filename)
 
+            fid.close()
+
             log.info(f"Created observing plan for alert {alertname}.")
             send_mail(subject=f"[GW@Wise] {alertname} {telescopes[tel]} observing plan",
                       text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(telescopes[tel], alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                               dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)),
-                      files=[rtml_filename])
+                      files=[rtml_filename, csv_filename])
 
             # upload to remote Scheduler
             if not config.get(telescopes[tel], 'HOST'):
