@@ -85,7 +85,7 @@ def get_sky_area(skymap_path, credzone=0.5):
     Returns the credzone sky area in degrees
     :param skymap_path: path to skymap file
     :param credzone: localization probability to consider credible
-    :return: credzone area in degrees
+    :return: credzone area in deg^2
     """
 
     # Read the HEALPix sky map:

@@ -206,7 +206,7 @@ process_gcn(payload, root)
 
 ## Additional utilities
 
-You can use `wisegcn` to check the healpix probability of a specific location (based on RA, Dec only, not taking the distance into account). These utilities are also Python 2.7 compatible.
+You can use `wisegcn` to check the healpix probability of a specific location (based on RA, Dec only, not taking the distance into account), and the localization sky area. These utilities are also Python 2.7 compatible.
 
 ### Get healpix probability based on location
 
@@ -229,6 +229,15 @@ from wisegcn.utils import get_galaxy_healpix_probability
 glade_id = 12345
 skymap = "/path/to/bayestar.fits.gz"
 p = get_galaxy_healpix_probability(glade_id, skymap)
+```
+
+### Get localization sky area based on healpix probability
+```
+from wisegcn.utils import get_sky_area
+
+credzone = 0.5  # localization probability to consider credible
+skymap = "/path/to/bayestar.fits.gz"
+area = get_sky_area(skymap, credzone)  # [deg^2]
 ```
 
 ## Acknowledgments
