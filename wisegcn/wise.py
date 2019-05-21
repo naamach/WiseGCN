@@ -83,7 +83,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
                         airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
-                fid.write("{}:,{:.0f},{},{},{:+.2f},{:+.2f},{:.2f},{:.2f},{:.2f},{:.6g},{:.2f}\n".format(
+                fid.write("{},{:.0f},{},{},{:+.2f},{:+.2f},{:.2f},{:.2f},{:.2f},{:.6g},{:.2f}\n".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),

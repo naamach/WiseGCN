@@ -81,7 +81,7 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     ha = calc_hourangle(ra, lon, t)
     if ha <= ha_min or ha >= ha_max:
         if return_values:
-            return False, airmass, np.double(ha), -999
+            return False, airmass, ha.value, -999
         else:
             return False
 
@@ -89,12 +89,12 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     lunar_dist = lunar_distance(ra, dec, lat, lon, alt, t)
     if lunar_dist < min_lunar_distance:
         if return_values:
-            return False, airmass, np.double(ha), lunar_dist.value
+            return False, airmass, ha.value, lunar_dist.value
         else:
             return False
 
     if return_values:
-        return True, airmass, np.double(ha), lunar_dist.value
+        return True, airmass, ha.value, lunar_dist.value
     else:
         return True
 
@@ -103,13 +103,8 @@ def is_observable_in_interval(ra, dec, lat, lon, alt, t1, t2, ha_min=-4.6*u.hour
                   airmass_min=1.02, airmass_max=3, min_lunar_distance=30*u.deg, return_values=False):
     t_vec = t1 + np.arange(0, ((t2-t1).to(u.hour)).value, 1) * u.hour
 
-    if return_values:
-        # default values
-        airmass = -999
-        ha = -999
-        lunar_dist = -999
-    observable = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max, airmass_min, airmass_max,
-                               return_values=False)
+    observable, airmass, ha, lunar_dist = is_observable(ra, dec, lat, lon, alt, t_vec[0], ha_min, ha_max,
+                                                        airmass_min, airmass_max, return_values=True)
     i = 1
     while (not observable) and (i < len(t_vec)):
         observable, airmass, ha, lunar_dist = is_observable(ra, dec, lat, lon, alt, t_vec[i], ha_min, ha_max,
