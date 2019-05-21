@@ -82,12 +82,12 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
                 fid.write("{}:,{:.0f},{},{},{:+.2f},{:+.2f},{:.2f},{:.2f},{:.2f},{:.6g},{:.2f}\n".format(
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
                 root = rtml.add_request(root,
                                         request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
@@ -118,7 +118,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                         i + 1, galaxies[i, 0],
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist.value, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
+                        airmass, ha, lunar_dist, galaxies[i, 3], galaxies[i, 4], galaxies[i, 5], galaxies[i, 6]))
 
             if n_galaxies_in_plan >= max_galaxies:
                 # maximal number of galaxies per plan has been reached

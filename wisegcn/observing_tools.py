@@ -89,12 +89,12 @@ def is_observable(ra, dec, lat, lon, alt, t=Time.now(), ha_min=-4.6*u.hourangle,
     lunar_dist = lunar_distance(ra, dec, lat, lon, alt, t)
     if lunar_dist < min_lunar_distance:
         if return_values:
-            return False, airmass, np.double(ha), lunar_dist
+            return False, airmass, np.double(ha), lunar_dist.value
         else:
             return False
 
     if return_values:
-        return True, airmass, np.double(ha), lunar_dist
+        return True, airmass, np.double(ha), lunar_dist.value
     else:
         return True
 
