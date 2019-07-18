@@ -99,7 +99,7 @@ def format_alert(params):
             <b>Event UT:</b> {params["isotime"]}<br>
             <b>Alert UT:</b> {params["date_ivorn"]}<br>
             <b>Ingestion UT:</b> {t.value}<br>
-            <b>FAR [yr<sup>-1</sup>]:</b> {params["FAR"]}<br>
+            <b>FAR [yr<sup>-1</sup>]:</b> {params["FAR"]*60*60*24*365}<br>
             <b>Detectors:</b> {params["Instruments"]}<br>
             <b>Nature [BNS / NSBH / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
                 {np.round(float(params["NSBH"])*100, 1)}% / 
