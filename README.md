@@ -148,12 +148,18 @@ HOST = 1m_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
+
+
+[IERS]
+URL = ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all ; IERS table URL (default is: http://maia.usno.navy.mil/ser7/finals2000A.all)
 ```
 
 NOTE: To find the `mysql` socket, run:
 ```
 $ netstat -ln | grep mysql
 ```
+
+The IERS URL option is to solve timeout problems of `wisegcn.observing_tools` functions using `astropy.utils.iers` tables (https://docs.astropy.org/en/stable/utils/iers.html), when the default `http://maia.usno.navy.mil/ser7/finals2000A.all` URL is down.
 
 ## Using `wisegcn`
 

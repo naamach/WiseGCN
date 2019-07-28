@@ -4,6 +4,11 @@ from astropy.time import Time
 import numpy as np
 
 
+def change_iers_url(url="http://maia.usno.navy.mil/ser7/finals2000A.all"):
+    from astropy.utils import iers
+    iers.conf.iers_auto_url = url
+
+
 def is_night(lat, lon, alt, t=Time.now(), sun_alt_twilight=-12*u.deg):
     """is it nighttime?"""
 

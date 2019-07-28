@@ -1,7 +1,7 @@
 from astropy import units as u
 from astropy.coordinates import Angle
 from astropy.time import Time
-from wisegcn.observing_tools import is_night, next_sunset, next_sunrise, is_observable_in_interval
+from wisegcn.observing_tools import is_night, next_sunset, next_sunrise, is_observable_in_interval, change_iers_url
 from configparser import ConfigParser
 from schedulertml import rtml
 from wisegcn.email_alert import send_mail
@@ -45,6 +45,9 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
     telescopes = config.get('WISE', 'TELESCOPES').split(',')
     max_galaxies = config.getint('GALAXIES', 'MAXGALAXIESPLAN')  # maximal number of galaxies to use in observation plan
+
+    # change IERS table URL (to fix URL timeout problems)
+    change_iers_url(url=config.get('IERS', 'URL'))
 
     nothing_to_observe = True
     for tel in range(0, len(telescopes)):
