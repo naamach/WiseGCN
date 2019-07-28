@@ -146,7 +146,8 @@ def process_gcn(payload, root):
     send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
               text="Attached {} GCN/LVC alert received, started processing.".format(filename),
               html=format_alert(params),
-              files=[alerts_path+filename+'.xml'])
+              files=[alerts_path+filename+'.xml'],
+              log=log)
 
     # Insert VOEvent to the database
     mysql_update.insert_voevent('voevent_lvc', params, log)
@@ -161,7 +162,8 @@ def process_gcn(payload, root):
     if area > config.getfloat("GENERAL", "AREA_MAX"):
         log.info(f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
         send_mail(subject="[GW@Wise] {} GCN/LVC event badly localized".format(filename),
-                  text=f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
+                  text=f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""",
+                  log=log)
         return
 
     # Create the galaxy list
@@ -171,7 +173,8 @@ def process_gcn(payload, root):
                 names=["GladeID", "RA", "Dec", "Dist", "Bmag", "Score", "Distance factor"])
     send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
               text="{} GCN/LVC alert galaxy list is attached.".format(filename),
-              files=["galaxy_list.csv"])
+              files=["galaxy_list.csv"],
+              log=log)
 
     # Create Wise plan
     wise.process_galaxy_list(galaxies, alertname=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)

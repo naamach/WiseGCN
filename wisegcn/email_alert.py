@@ -48,12 +48,8 @@ def send_mail(subject, text, html="",
         part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
         msg.attach(part)
 
-    print(send_from)
-    print(send_to + cc_to + bcc_to)
-    print(msg.as_string())
-    log.debug(f"Sending email from {send_from} to {send_to + cc_to + bcc_to}, msg={msg.as_string()}")
-
     try:
+        log.debug(f"Sending email from {send_from} to {send_to + cc_to + bcc_to}, msg={msg.as_string()}")
         smtp = smtplib.SMTP(server)
         smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
         smtp.close()
@@ -104,7 +100,7 @@ def format_alert(params):
             <b>Event UT:</b> {params["isotime"]}<br>
             <b>Alert UT:</b> {params["date_ivorn"]}<br>
             <b>Ingestion UT:</b> {t.value}<br>
-            <b>FAR [yr<sup>-1</sup>]:</b> {params["FAR"]*60*60*24*365}<br>
+            <b>FAR [yr<sup>-1</sup>]:</b> 1/{np.round(1/(float(params["FAR"])*60*60*24*365),2)}<br>
             <b>Detectors:</b> {params["Instruments"]}<br>
             <b>Nature [BNS / NSBH / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
                 {np.round(float(params["NSBH"])*100, 1)}% / 

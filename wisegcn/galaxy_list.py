@@ -52,7 +52,8 @@ def find_galaxy_list(skymap_path, log=None):
         log.error('Failed to read sky map!')
         send_mail(subject="[GW@Wise] Failed to read LVC sky map",
                   text='''FITS file: {}
-                          Exception: {}'''.format(skymap_path, e))
+                          Exception: {}'''.format(skymap_path, e),
+                  log=log)
 
     # Load the galaxy catalog (glade_id, RA, DEC, distance, Bmag):
     galaxy_cat = np.load(cat_file)
