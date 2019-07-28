@@ -102,7 +102,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
                                         hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'),
-                                        priority=str(min(max_galaxies, galaxies.shape[0])-i))
+                                        priority=str(min(max_galaxies, galaxies.shape[0])-n_galaxies_in_plan))
 
                 rtml.add_target(root,
                                 request_id="GladeID_{:.0f}".format(galaxies[i, 0]),
