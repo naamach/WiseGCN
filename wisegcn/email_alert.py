@@ -48,8 +48,11 @@ def send_mail(subject, text, html="",
         part['Content-Disposition'] = 'attachment; filename="%s"' % basename(f)
         msg.attach(part)
 
+    print(send_from)
+    print(send_to + cc_to + bcc_to)
+    print(msg.as_string())
     log.debug(f"Sending email from {send_from} to {send_to + cc_to + bcc_to}, msg={msg.as_string()}")
-    
+
     try:
         smtp = smtplib.SMTP(server)
         smtp.sendmail(send_from, send_to+cc_to+bcc_to, msg.as_string())
