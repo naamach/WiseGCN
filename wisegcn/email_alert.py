@@ -106,8 +106,8 @@ def format_alert(params, skymap=None):
 
     if skymap is not None:
         html = html + f"""\
-            <b>50% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.5))}<br>
-            <b>90% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.9))}<br>
+            <b>50% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.5), 2)}<br>
+            <b>90% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.9), 2)}<br>
         """
 
     html = html + f"""\
