@@ -111,7 +111,7 @@ def process_gcn(payload, root):
             (config.getfloat("GENERAL", "NSBH_MIN") < float(params["NSBH"])) |
             (config.getfloat("GENERAL", "BBH_MIN") < float(params["BBH"]))) & \
             (config.getfloat("GENERAL", "TERRESTRIAL_MAX") >= float(params["Terrestrial"])) & \
-            (config.getfloat("GENERAL", "FAR_MAX") >= float(params["FAR"])):
+            (config.getfloat("GENERAL", "FAR_MAX") >= float(params["FAR"])*60*60*24*365):
         pass
     else:
         log.info("Uninteresting alert, aborting.")
@@ -142,13 +142,6 @@ def process_gcn(payload, root):
         description = description + ", " + item
     params['how_description'] = description
 
-    # Send alert email
-    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
-              text="Attached {} GCN/LVC alert received, started processing.".format(filename),
-              html=format_alert(params),
-              files=[alerts_path+filename+'.xml'],
-              log=log)
-
     # Insert VOEvent to the database
     mysql_update.insert_voevent('voevent_lvc', params, log)
 
@@ -156,6 +149,13 @@ def process_gcn(payload, root):
     tmp_path = download_file(params['skymap_fits'])
     skymap_path = fits_path + filename + "_" + ntpath.basename(params['skymap_fits'])
     shutil.move(tmp_path, skymap_path)
+
+    # Send alert email
+    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+              text="Attached {} GCN/LVC alert received, started processing.".format(filename),
+              html=format_alert(params, skymap_path),
+              files=[alerts_path+filename+'.xml'],
+              log=log)
 
     # Respond only to alerts with reasonable localization
     area = get_sky_area(skymap_path, credzone=config.getfloat("GENERAL", "AREA_CREDZONE"))

@@ -78,9 +78,10 @@ def format_html(text, img, img_width=300):
     return html
 
 
-def format_alert(params):
+def format_alert(params, skymap=None):
     from astropy.time import Time
     import numpy as np
+    from wisegcn.utils import get_sky_area
 
     # healpix map image path
     image_url = params["skymap_fits"][0:params["skymap_fits"].find("fits.gz")]
@@ -101,6 +102,15 @@ def format_alert(params):
             <b>Ingestion UT:</b> {t.value}<br>
             <b>FAR [yr<sup>-1</sup>]:</b> 1/{np.round(1/(float(params["FAR"])*60*60*24*365),2)}<br>
             <b>Detectors:</b> {params["Instruments"]}<br>
+    """
+
+    if skymap is not None:
+        html = html + f"""\
+            <b>50% Probability Area [deg<sup>2</sup>]:</b> {get_sky_area(skymap, credzone=0.5)}<br>
+            <b>90% Probability Area [deg<sup>2</sup>]:</b> {get_sky_area(skymap, credzone=0.9)}<br>
+        """
+
+    html = html + f"""\
             <b>Nature [BNS / NSBH / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
                 {np.round(float(params["NSBH"])*100, 1)}% / 
                 {np.round(float(params["BBH"])*100, 1)}% / 
