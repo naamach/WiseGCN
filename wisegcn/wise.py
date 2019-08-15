@@ -205,11 +205,11 @@ def process_tiles(skymap_path, alertname='GW', log=None):
         ra, dec, priority = tile.tile_region(skymap_path, credzone=config.getfloat("TILE", "CREDZONE"),
                                              tile_area=config.getfloat("TILE", "SIZE")*config.getfloat(telescopes[tel], "FOV"), log=log)
 
-        log.debug("Index\tRA\t\tDec\tAirmass\tHA\tLunarDist")
+        log.debug("Index\tRA\t\tDec\tAirmass\tHA\tLunarDist\tProbability")
 
         csv_filename = f"{telescopes[tel]}_TileList.csv"
         fid = open(csv_filename, "w")
-        fid.write("Index,RA,Dec,Airmass,HA,LunarDist\n")
+        fid.write("Index,RA,Dec,Airmass,HA,LunarDist,Probability\n")
 
         for i in range(len(ra)):
             is_observe, airmass, ha, lunar_dist = is_observable_in_interval(
@@ -227,16 +227,16 @@ def process_tiles(skymap_path, alertname='GW', log=None):
             if is_observe:
                 nothing_to_observe = False
                 log.debug(
-                    "{}:\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t\tadded to plan!".format(
+                    "{}:\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:.2f}\t{:.6g}\t\tadded to plan!".format(
                         i + 1,
                         ra[i].to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec[i].to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist))
-                fid.write("{},{},{},{:+.2f},{:+.2f},{:.2f}\n".format(
+                        airmass, ha, lunar_dist, priority))
+                fid.write("{},{},{},{:+.2f},{:+.2f},{:.2f},{:.6g}\n".format(
                         i + 1,
                         ra[i].to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec[i].to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist))
+                        airmass, ha, lunar_dist, priority))
 
                 root = rtml.add_request(root,
                                         request_id="Tile_{:.0f}".format(i+1),
@@ -263,11 +263,11 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                                  binning=config.get(telescopes[tel], 'BINNING'))
             else:
                 log.debug(
-                    "{}:\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:+.2f}".format(
+                    "{}:\t{}\t{}\t{:+.2f}\t{:+.2f}\t{:+.2f}\t{:.6g}".format(
                         i + 1,
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist))
+                        airmass, ha, lunar_dist, priority))
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
