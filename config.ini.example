@@ -60,6 +60,7 @@ MB_STAR = -20.7 ; Schechter function parameters, random slide from https://www.a
 [TILE]
 CREDZONE = 0.9  ; credible region to cover in tiles
 AREA_MAX = 30  ; [deg^2] maximal credible area to tile (including; if larger, observe individual galaxies instead)
+SIZE = 0.9  ; tile size in percentage of FOV
 
 [OBSERVING]
 SUN_ALT_MAX = -12

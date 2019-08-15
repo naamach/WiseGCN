@@ -202,8 +202,8 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                          email=config.get('OBSERVING', 'EMAIL'))
 
         # Tile the credible region
-        ra, dec = tile.tile_area(skymap_path, credzone=config.getfloat("TILE", "CREDZONE"),
-                                 fov=config.getfloat(telescopes[tel], "FOV"), log=log)
+        ra, dec, priority = tile.tile_region(skymap_path, credzone=config.getfloat("TILE", "CREDZONE"),
+                                             tile_area=config.getfloat("TILE", "SIZE")*config.getfloat(telescopes[tel], "FOV"), log=log)
 
         log.debug("Index\tRA\t\tDec\tAirmass\tHA\tLunarDist")
 
@@ -211,9 +211,9 @@ def process_tiles(skymap_path, alertname='GW', log=None):
         fid = open(csv_filename, "w")
         fid.write("Index,RA,Dec,Airmass,HA,LunarDist\n")
 
-        n_galaxies_in_plan = 0
         for i in range(len(ra)):
-            is_observe, airmass, ha, lunar_dist = is_observable_in_interval(ra=ra[i], dec=dec[i], lat=config.getfloat('WISE', 'LAT')*u.deg,
+            is_observe, airmass, ha, lunar_dist = is_observable_in_interval(
+                                                    ra=ra[i], dec=dec[i], lat=config.getfloat('WISE', 'LAT')*u.deg,
                                                     lon=config.getfloat('WISE', 'LON')*u.deg,
                                                     alt=config.getfloat('WISE', 'ALT')*u.m,
                                                     t1=t, t2=t_sunrise,
@@ -247,7 +247,8 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                                         airmass_min=config.get(telescopes[tel], 'AIRMASS_MIN'),
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
-                                        hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'))
+                                        hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'),
+                                        priority=str(priority))
 
                 rtml.add_target(root,
                                 request_id="Tile_{:.0f}".format(i+1),

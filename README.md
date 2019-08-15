@@ -97,6 +97,7 @@ MB_STAR = -20.7 ; Schechter function parameters, random slide from https://www.a
 [TILE]
 CREDZONE = 0.9  ; credible region to cover in tiles
 AREA_MAX = 30  ; [deg^2] maximal credible area to tile (including; if larger, observe individual galaxies instead)
+SIZE = 0.9  ; tile size in percentage of FOV
 
 [OBSERVING]
 SUN_ALT_MAX = -12
@@ -158,7 +159,6 @@ HOST = 1m_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
-
 
 [IERS]
 URL = ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all ; IERS table URL (default is: http://maia.usno.navy.mil/ser7/finals2000A.all)
@@ -251,7 +251,7 @@ p = get_galaxy_healpix_probability(glade_id, skymap)
 ```
 from wisegcn.utils import get_sky_area
 
-credzone = 0.5  # localization probability to consider credible
+credzone = [0.5, 0.9]  # localization probability to consider credible (could be a scalar or a list)
 skymap = "/path/to/bayestar.fits.gz"
 area = get_sky_area(skymap, credzone)  # [deg^2]
 ```

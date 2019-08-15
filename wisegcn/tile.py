@@ -6,7 +6,7 @@ from astropy.coordinates import Angle
 from wisegcn.email_alert import send_mail
 
 
-def tile_area(skymap_path, credzone=0.9, fov=1, log=None):
+def tile_region(skymap_path, credzone=0.9, tile_area=1, log=None):
     if log is None:
         log = logging.getLogger(__name__)
 
@@ -32,10 +32,12 @@ def tile_area(skymap_path, credzone=0.9, fov=1, log=None):
     theta, phi = hp.pix2ang(nside, good_pix)
 
     sky_area = 4 * 180 ** 2 / np.pi  # [deg^2]
-    nside_obs = int(np.ceil(np.sqrt(sky_area / fov / 12)))
-    obs_pix = np.unique(hp.ang2pix(nside_obs, theta, phi))
+    nside_obs = int(np.ceil(np.sqrt(sky_area / tile_area / 12)))
+    obs_pix, unique_idx = np.unique(hp.ang2pix(nside_obs, theta, phi), return_inverse=True)
+    priority = np.bincount(unique_idx, weights=prob[good_pix])
+
     theta, phi = hp.pix2ang(nside_obs, obs_pix)
     ra = Angle(np.rad2deg(phi)*u.deg)
     dec = Angle(np.rad2deg(0.5 * np.pi - theta)*u.deg)
 
-    return ra, dec
+    return ra, dec, priority
