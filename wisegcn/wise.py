@@ -231,12 +231,12 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                         i + 1,
                         ra[i].to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec[i].to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist, priority))
+                        airmass, ha, lunar_dist, priority[i]))
                 fid.write("{},{},{},{:+.2f},{:+.2f},{:.2f},{:.6g}\n".format(
                         i + 1,
                         ra[i].to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec[i].to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist, priority))
+                        airmass, ha, lunar_dist, priority[i]))
 
                 root = rtml.add_request(root,
                                         request_id="Tile_{:.0f}".format(i+1),
@@ -248,7 +248,7 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                                         airmass_max=config.get(telescopes[tel], 'AIRMASS_MAX'),
                                         hourangle_min=config.get(telescopes[tel], 'HOURANGLE_MIN'),
                                         hourangle_max=config.get(telescopes[tel], 'HOURANGLE_MAX'),
-                                        priority=str(priority))
+                                        priority=str(priority[i]))
 
                 rtml.add_target(root,
                                 request_id="Tile_{:.0f}".format(i+1),
@@ -267,7 +267,7 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                         i + 1,
                         ra.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
                         dec.to_string(sep=':', precision=2, alwayssign=True, pad=True),
-                        airmass, ha, lunar_dist, priority))
+                        airmass, ha, lunar_dist, priority[i]))
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
