@@ -34,10 +34,15 @@ def tile_region(skymap_path, credzone=0.9, tile_area=1, log=None):
     sky_area = 4 * 180 ** 2 / np.pi  # [deg^2]
     nside_obs = int(np.ceil(np.sqrt(sky_area / tile_area / 12)))
     obs_pix, unique_idx = np.unique(hp.ang2pix(nside_obs, theta, phi), return_inverse=True)
-    priority = np.bincount(unique_idx, weights=prob[good_pix])
+    probability = np.bincount(unique_idx, weights=prob[good_pix])
+
+    # sort by descending probability
+    sort_idx = np.flipud(np.argsort(probability, kind="stable"))
+    probability = probability[sort_idx]
+    obs_pix = obs_pix[sort_idx]
 
     theta, phi = hp.pix2ang(nside_obs, obs_pix)
     ra = Angle(np.rad2deg(phi)*u.deg)
     dec = Angle(np.rad2deg(0.5 * np.pi - theta)*u.deg)
 
-    return ra, dec, priority
+    return ra, dec, probability
