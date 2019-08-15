@@ -111,8 +111,9 @@ def format_alert(params, skymap=None):
         """
 
     html = html + f"""\
-            <b>Nature [BNS / NSBH / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
+            <b>Nature [BNS / NSBH / MassGap / BBH / Terrestrial]:</b> {np.round(float(params["BNS"])*100, 1)}% / 
                 {np.round(float(params["NSBH"])*100, 1)}% / 
+                {np.round(float(params["MassGap"])*100, 1)}% / 
                 {np.round(float(params["BBH"])*100, 1)}% / 
                 {np.round(float(params["Terrestrial"])*100, 1)}%<br>
             <b>Probability of NS Component:</b> {np.round(float(params["HasNS"])*100, 1)}%<br>
