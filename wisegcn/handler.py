@@ -4,7 +4,7 @@ from astropy.io import ascii
 import shutil
 import ntpath
 from wisegcn.email_alert import send_mail, format_alert
-from wisegcn import galaxy_list
+from wisegcn import galaxy_list, tile
 from wisegcn import wise
 from wisegcn import mysql_update
 from wisegcn.utils import get_sky_area
@@ -153,34 +153,42 @@ def process_gcn(payload, root):
     skymap_path = fits_path + filename + "_" + ntpath.basename(params['skymap_fits'])
     shutil.move(tmp_path, skymap_path)
 
-    # Send alert email
-    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
-              text="Attached {} GCN/LVC alert received, started processing.".format(filename),
-              html=format_alert(params, skymap_path),
-              files=[alerts_path+filename+'.xml'],
-              log=log)
-
     # Respond only to alerts with reasonable localization
-    area = get_sky_area(skymap_path, credzone=config.getfloat("GENERAL", "AREA_CREDZONE"))
-    if area > config.getfloat("GENERAL", "AREA_MAX"):
-        log.info(f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
-        send_mail(subject="[GW@Wise] {} GCN/LVC event badly localized".format(filename),
-                  text=f"""{config.get("GENERAL", "AREA_CREDZONE")} area is {area} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""",
+    credzones = [0.5, 0.9, config.getfloat("GENERAL", "AREA_CREDZONE"), config.getfloat("TILE", "CREDZONE")]
+    area = get_sky_area(skymap_path, credzone=credzones)
+    if area[2] > config.getfloat("GENERAL", "AREA_MAX"):
+        log.info(f"""{credzones[2]} area is {area[2]} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
+        send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+                  text=f"""Attached {filename} GCN/LVC alert received, but {credzones[2]} area is {area[2]} > \
+                          {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""",
+                  html=format_alert(params, area[0:1]),
+                  files=[alerts_path + filename + '.xml'],
                   log=log)
         return
 
-    # Create the galaxy list
-    galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
-    # Save galaxy list to csv file and send it
-    ascii.write(galaxies, "galaxy_list.csv", format="csv", overwrite=True,
-                names=["GladeID", "RA", "Dec", "Dist", "Bmag", "Score", "Distance factor"])
-    send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
-              text="{} GCN/LVC alert galaxy list is attached.".format(filename),
-              files=["galaxy_list.csv"],
+    # Send alert email
+    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+              text="Attached {} GCN/LVC alert received, started processing.".format(filename),
+              html=format_alert(params, area[0:2]),
+              files=[alerts_path+filename+'.xml'],
               log=log)
 
-    # Create Wise plan
-    wise.process_galaxy_list(galaxies, alertname=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
+    if area[3] > config.getfloat("TILE", "AREA_MAX"):
+        # Create the galaxy list
+        galaxies, ra, dec = galaxy_list.find_galaxy_list(skymap_path, log=log)
+        # Save galaxy list to csv file and send it
+        ascii.write(galaxies, "galaxy_list.csv", format="csv", overwrite=True,
+                    names=["GladeID", "RA", "Dec", "Dist", "Bmag", "Score", "Distance factor"])
+        send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
+                  text="{} GCN/LVC alert galaxy list is attached.".format(filename),
+                  files=["galaxy_list.csv"],
+                  log=log)
+
+        # Create Wise plan
+        wise.process_galaxy_list(galaxies, alertname=ivorn.split('/')[-1], ra_event=ra, dec_event=dec, log=log)
+    else:
+        # Tile the credible region
+        wise.process_tiles(skymap_path, alertname=ivorn.split('/')[-1], log=log)
 
     # Finish and delete logger
     log.info("Done.")

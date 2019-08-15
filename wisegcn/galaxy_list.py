@@ -22,7 +22,7 @@ def find_galaxy_list(skymap_path, log=None):
     # parameters:
     credzone = config.getfloat('GALAXIES', 'CREDZONE')  # Localization probability to consider credible
     relaxed_credzone = config.getfloat('GALAXIES', 'RELAXED_CREDZONE')
-    nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distnace
+    nsigmas_in_d = config.getfloat('GALAXIES', 'NSIGMAS_IN_D')  # Sigmas to consider in distance
     relaxed_nsigmas_in_d = config.getfloat('GALAXIES', 'RELAXED_NSIGMAS_IN_D')
     completeness = config.getfloat('GALAXIES', 'COMPLETENESS')
     min_galaxies = config.getfloat('GALAXIES', 'MINGALAXIES')  # minimal number of galaxies to output
@@ -31,7 +31,7 @@ def find_galaxy_list(skymap_path, log=None):
     # magnitude of event in r-band. values are value from Barnes... +-1.5 mag
     minmag = config.getfloat('GALAXIES', 'MINMAG')  # Estimated brightest KN abs mag
     maxmag = config.getfloat('GALAXIES', 'MAXMAG')  # Estimated faintest KN abs mag
-    sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')  # Estimatest faintest app mag we can see
+    sensitivity = config.getfloat('GALAXIES', 'SENSITIVITY')  # Estimated faintest app mag we can see
 
     min_dist_factor = config.getfloat('GALAXIES', 'MINDISTFACTOR')  # reflecting a small chance that the theory is completely wrong and we can still see something
 

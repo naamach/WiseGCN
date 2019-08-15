@@ -84,7 +84,7 @@ def get_sky_area(skymap_path, credzone=0.5):
     """
     Returns the credzone sky area in degrees
     :param skymap_path: path to skymap file
-    :param credzone: localization probability to consider credible
+    :param credzone: localization probability to consider credible, could also be a list
     :return: credzone area in deg^2
     """
 
@@ -98,16 +98,16 @@ def get_sky_area(skymap_path, credzone=0.5):
     npix = len(prob)
     nside = hp.npix2nside(npix)
 
-    # Find given percent probability zone (default is 99%):
-    prob_sum = 0
-    npix_credzone = 0
+    sort_idx = np.flipud(np.argsort(prob, kind="stable"))
+    sorted_credible_levels = np.cumsum(prob[sort_idx])
+    credible_levels = np.empty_like(sorted_credible_levels)
+    credible_levels[sort_idx] = sorted_credible_levels
 
-    prob_sorted = np.sort(prob, kind="stable")
-    while prob_sum < credzone:
-        prob_sum = prob_sum + prob_sorted[-1]
-        prob_sorted = prob_sorted[:-1]
-        npix_credzone = npix_credzone + 1
-
-    area = npix_credzone * hp.nside2pixarea(nside, degrees=True)
+    if np.isscalar(credzone):
+        area = np.sum(credible_levels <= credzone) * hp.nside2pixarea(nside, degrees=True)
+    else:
+        area = [None]*len(credzone)
+        for i in range(len(credzone)):
+            area[i] = np.sum(credible_levels <= credzone[i]) * hp.nside2pixarea(nside, degrees=True)
 
     return area

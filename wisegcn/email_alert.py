@@ -78,7 +78,7 @@ def format_html(text, img, img_width=300):
     return html
 
 
-def format_alert(params, skymap=None):
+def format_alert(params, area=None):
     from astropy.time import Time
     import numpy as np
     from wisegcn.utils import get_sky_area
@@ -104,10 +104,10 @@ def format_alert(params, skymap=None):
             <b>Detectors:</b> {params["Instruments"]}<br>
     """
 
-    if skymap is not None:
+    if area is not None:
         html = html + f"""\
-            <b>50% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.5), 2)}<br>
-            <b>90% Probability Area [deg<sup>2</sup>]:</b> {np.round(get_sky_area(skymap, credzone=0.9), 2)}<br>
+            <b>50% Probability Area [deg<sup>2</sup>]:</b> {np.round(area[0], 2)}<br>
+            <b>90% Probability Area [deg<sup>2</sup>]:</b> {np.round(area[1], 2)}<br>
         """
 
     html = html + f"""\

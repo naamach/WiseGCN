@@ -57,6 +57,10 @@ MINDISTFACTOR = 0.01 ; reflecting a small chance that the theory is completely w
 ALPHA = -1.07 ; Schechter function parameters
 MB_STAR = -20.7 ; Schechter function parameters, random slide from https://www.astro.umd.edu/~richard/ASTRO620/LumFunction-pp.pdf but not really...?
 
+[TILE]
+CREDZONE = 0.9  ; credible region to cover in tiles
+AREA_MAX = 30  ; [deg^2] maximal credible area to tile (including; if larger, observe individual galaxies instead)
+
 [OBSERVING]
 SUN_ALT_MAX = -12
 BESTEFFORTS = 1
@@ -74,6 +78,7 @@ TELESCOPES = C28  ; C28, C18, 1m
 PATH = /path/to/plans/
 
 [C28]
+FOV = 1  ; [deg^2] FLI field of view
 AIRMASS_MIN = 1.02  ; the shutter blocks the CCD above 80deg
 AIRMASS_MAX = 3
 HOURANGLE_MIN = -4.6
@@ -88,6 +93,7 @@ CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
 
 [C18]
+FOV = 1  ; [deg^2] SBIG field of view
 AIRMASS_MIN = 1
 AIRMASS_MAX = 3
 HOURANGLE_MIN = -5.3
@@ -102,6 +108,7 @@ CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
 
 [1m]
+FOV = 0.2158  ; [deg^2] PI field of view
 AIRMASS_MIN = 1
 AIRMASS_MAX = 3
 HOURANGLE_MIN = -12
