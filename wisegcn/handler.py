@@ -109,7 +109,10 @@ def process_gcn(payload, root):
     # Respond only to specific merger types
     if ((config.getfloat("GENERAL", "BNS_MIN") < float(params["BNS"])) |
             (config.getfloat("GENERAL", "NSBH_MIN") < float(params["NSBH"])) |
-            (config.getfloat("GENERAL", "BBH_MIN") < float(params["BBH"]))) & \
+            (config.getfloat("GENERAL", "MASSGAP_MIN") < float(params["MassGap"])) |
+            (config.getfloat("GENERAL", "BBH_MIN") < float(params["BBH"])) |
+            (config.getfloat("GENERAL", "HASNS_MIN") < float(params["HasNS"])) |
+            (config.getfloat("GENERAL", "HASREMNANT_MIN") < float(params["HasRemnant"]))) & \
             (config.getfloat("GENERAL", "TERRESTRIAL_MAX") >= float(params["Terrestrial"])) & \
             (config.getfloat("GENERAL", "FAR_MAX") >= float(params["FAR"])*60*60*24*365):
         pass
@@ -146,7 +149,7 @@ def process_gcn(payload, root):
     mysql_update.insert_voevent('voevent_lvc', params, log)
 
     # Download the HEALPix sky map FITS file.
-    tmp_path = download_file(params['skymap_fits'])
+    tmp_path = download_file(params['skymap_fits'], cache=False)
     skymap_path = fits_path + filename + "_" + ntpath.basename(params['skymap_fits'])
     shutil.move(tmp_path, skymap_path)
 
