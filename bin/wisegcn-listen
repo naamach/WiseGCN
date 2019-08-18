@@ -4,16 +4,17 @@ from logging.handlers import TimedRotatingFileHandler
 import getopt
 import argparse
 import sys
-from shutil import copyfile
+import shutil
 import gcn
 from wisegcn.handler import process_gcn
 
 
 def usage():
     parser = argparse.ArgumentParser(
-        description='''Listen to GCN/TAN VOEvents, respond to GW alerts, and prepare them for followup observations at the Wise Observatory.'''
+        description='''Listen to GCN/TAN VOEvents, respond to GW alerts, and prepare them for followup observations at 
+        the Wise Observatory.'''
     )
-    parser.add_argument("-c", "--config", metavar="config_file", help="""path to config.ini file (default: config.ini).\n
+    parser.add_argument("-c", "--config", metavar="config_file", help="""path to config.ini file (default: config.ini).
                                                                       NOTE: the config file will be copied to the 
                                                                       current directory as "config.ini""""",
                         default="config.ini")
@@ -62,8 +63,12 @@ def main(argv):
             sys.exit(2)
         elif opt in ("-c", "--config"):
             # copy the config file to the current directory
-            print("Copying the config file to the current folder.")
-            copyfile(arg, "config.ini")
+            try:
+                print("Copying the config file to the current folder.")
+                shutil.copyfile(arg, "config.ini")
+            except shutil.SameFileError as err:
+                print(err)
+                print("Didn't copy config.ini.")
         elif opt in ("-l", "--log"):
             log_file = arg
 

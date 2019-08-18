@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 import requests
-from shutil import copyfile
+import shutil
 import lxml.etree
 from wisegcn.handler import process_gcn
 
@@ -46,9 +46,12 @@ def main(argv):
                 r = requests.get(url)
                 payload = r.content
         elif opt in ("-c", "--config"):
-            # copy the config file to the current directory
-            print("Copying the config file to the current folder.")
-            copyfile(arg, "config.ini")
+            try:
+                print("Copying the config file to the current folder.")
+                shutil.copyfile(arg, "config.ini")
+            except shutil.SameFileError as err:
+                print(err)
+                print("Didn't copy config.ini.")
 
     # Listen for GCN notices (until interrupted or killed)
     root = lxml.etree.fromstring(payload)

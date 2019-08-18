@@ -239,7 +239,7 @@ optional arguments:
 
 Alternativey, download the event file manually, e.g.:
 ```
-$ curl -O https://emfollow.docs.ligo.org/userguide/_static/MS181101ab-1-Preliminary.xml
+$ curl -O https://gracedb.ligo.org/apiweb/superevents/S190814bv/files/S190814bv-5-Update.xml
 ```
 Then, from inside `python` run (while the `gw` `conda` environment is activated):
 
