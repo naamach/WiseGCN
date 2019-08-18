@@ -8,7 +8,7 @@ from configparser import ConfigParser
 import logging
 
 config = ConfigParser(inline_comment_prefixes=';')
-config.read('config.ini')
+config.read("config.ini")
 
 
 def send_mail(subject, text, html="",

@@ -4,7 +4,7 @@ from astropy.io import ascii
 import shutil
 import ntpath
 from wisegcn.email_alert import send_mail, format_alert
-from wisegcn import galaxy_list, tile
+from wisegcn import galaxy_list
 from wisegcn import wise
 from wisegcn import mysql_update
 from wisegcn.utils import get_sky_area
@@ -14,7 +14,7 @@ import logging
 import os
 
 config = ConfigParser(inline_comment_prefixes=';')
-config.read('config.ini')
+config.read("config.ini")
 
 
 def init_log(filename="log.log"):

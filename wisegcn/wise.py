@@ -9,7 +9,7 @@ from wisegcn import tile
 import logging
 
 config = ConfigParser(inline_comment_prefixes=';')
-config.read('config.ini')
+config.read("config.ini")
 
 
 def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None, log=None):
