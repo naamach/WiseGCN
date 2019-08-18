@@ -11,13 +11,15 @@ from wisegcn.handler import process_gcn
 
 def usage():
     parser = argparse.ArgumentParser(
-        description='''Run WiseGCN offline on a specific GW alert, and prepare it for followup observations at the Wise Observatory.'''
+        description='''Run WiseGCN offline on a specific GW alert, and prepare it for followup observations at
+         the Wise Observatory.'''
     )
-    parser.add_argument("-e", "--event", metavar="event_file", help="event name, e.g. S190814bv-5-Update (will download the event from GraceDB)")
-    parser.add_argument("-p", "--path", metavar="event_name", help="path to the event file (local or remote)")
-    parser.add_argument("-c", "--config", metavar="config_file", help="""path to config.ini file (default: config.ini).\n
+    parser.add_argument("-e", "--event", metavar="event_name", required=True,
+                        help="either a local path to event xml file; or the event name (e.g. S190814bv-5-Update)"
+                             " to download from GraceDB")
+    parser.add_argument("-c", "--config", metavar="config_file", help="""path to config.ini file (default: config.ini).
                                                                       NOTE: the config file will be copied to the 
-                                                                      current directory as "config.ini""""",
+                                                                      current directory as 'config.ini'""",
                         default="config.ini")
     parser.parse_args()
 
@@ -35,16 +37,13 @@ def main(argv):
             usage()
             sys.exit(2)
         elif opt in ("-e", "--event"):
-            base_url = "https://gracedb.ligo.org/apiweb/superevents/"
-            event = arg.split("-")[0]
-            url = base_url + event + "/files/" + arg + ".xml"
-            r = requests.get(arg)
-            payload = r.content
-        elif opt in ("-p", "--path"):
             if os.path.isfile(arg):  # local file
                 payload = open(arg, 'rb').read()
-            else:  # URL
-                r = requests.get(arg)
+            else:  # download event
+                base_url = "https://gracedb.ligo.org/apiweb/superevents/"
+                event = arg.split("-")[0]
+                url = base_url + event + "/files/" + arg + ".xml"
+                r = requests.get(url)
                 payload = r.content
         elif opt in ("-c", "--config"):
             # copy the config file to the current directory

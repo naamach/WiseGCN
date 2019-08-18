@@ -192,28 +192,63 @@ print("Listening to GCN notices (press Ctrl+C to kill)...")
 gcn.listen(handler=process_gcn)
 ```
 
-### Testing `wisegcn` offline
+General usage of `wisegcn-listen`:
+```
+usage: wisegcn-listen [-h] [-c config_file] [-l log_file]
 
-To test `wisegcn` offline, first download the sample GCN notice:
+Listen to GCN/TAN VOEvents, respond to GW alerts, and prepare them for
+followup observations at the Wise Observatory.
 
+optional arguments:
+  -h, --help            show this help message and exit
+  -c config_file, --config config_file
+                        path to config.ini file (default: config.ini). NOTE:
+                        the config file will be copied to the current
+                        directory as "config.ini
+  -l log_file, --log log_file
+                        path to the log file (default: pygcn.log)
+
+```
+
+### Running `wisegcn` offline on a past alert
+
+To run `wisegcn` offline on, e.g., S190814bv-5-Update, run:
+
+```
+$ wisegcn-ingest -e S190814bv-5-Update
+```
+
+General usage of `wisegcn-listen`:
+```
+usage: wisegcn-ingest [-h] -e event_name [-c config_file]
+
+Run WiseGCN offline on a specific GW alert, and prepare it for followup
+observations at the Wise Observatory.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -e event_name, --event event_name
+                        either a local path to event xml file; or the event
+                        name (e.g. S190814bv-5-Update) to download from
+                        GraceDB
+  -c config_file, --config config_file
+                        path to config.ini file (default: config.ini). NOTE:
+                        the config file will be copied to the current
+                        directory as 'config.ini'
+```
+
+Alternativey, download the event file manually, e.g.:
 ```
 $ curl -O https://emfollow.docs.ligo.org/userguide/_static/MS181101ab-1-Preliminary.xml
 ```
-
-Then run:
-
-```
-$ wisegcn_localtest
-```
-
-Alternativey, from inside `python` run (while the `gw` `conda` environment is activated):
+Then, from inside `python` run (while the `gw` `conda` environment is activated):
 
 ```
 from wisegcn.handler import process_gcn
 import lxml.etree
 
-print("Assuming MS181101ab-1-Preliminary.xml is in the working directory")
-filename = 'MS181101ab-1-Preliminary.xml'
+print("Assuming S190814bv-5-Update.xml is in the working directory")
+filename = 'S190814bv-5-Update.xml'
 
 payload = open(filename, 'rb').read()
 root = lxml.etree.fromstring(payload)
