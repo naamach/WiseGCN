@@ -215,22 +215,23 @@ optional arguments:
 To run `wisegcn` offline on, e.g., S190814bv-5-Update, run:
 
 ```
-$ wisegcn-ingest -e S190814bv-5-Update
+$ wisegcn-ingest S190814bv-5-Update
 ```
 
-General usage of `wisegcn-listen`:
+General usage of `wisegcn-ingest`:
 ```
-usage: wisegcn-ingest [-h] -e event_name [-c config_file]
+usage: wisegcn-ingest [-h] [-c config_file] event_name
 
 Run WiseGCN offline on a specific GW alert, and prepare it for followup
 observations at the Wise Observatory.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -e event_name, --event event_name
-                        either a local path to event xml file; or the event
+positional arguments:
+  event_name            either a local path to event xml file; or the event
                         name (e.g. S190814bv-5-Update) to download from
                         GraceDB
+
+optional arguments:
+  -h, --help            show this help message and exit
   -c config_file, --config config_file
                         path to config.ini file (default: config.ini). NOTE:
                         the config file will be copied to the current
