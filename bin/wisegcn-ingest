@@ -52,7 +52,11 @@ def main(argv):
         base_url = "https://gracedb.ligo.org/apiweb/superevents/"
         event = event_name.split("-")[0]
         url = base_url + event + "/files/" + event_name + ".xml"
+        print(f"Downloading {url}...")
         r = requests.get(url)
+        if not r.ok:
+            print("Download failed.")
+            return
         payload = r.content
     root = lxml.etree.fromstring(payload)
     process_gcn(payload, root)
