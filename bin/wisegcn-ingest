@@ -14,7 +14,7 @@ def usage():
         description='''Run WiseGCN offline on a specific GW alert, and prepare it for followup observations at
          the Wise Observatory.'''
     )
-    parser.add_argument("-e", "--event", metavar="event_name", required=True,
+    parser.add_argument("event_name",
                         help="either a local path to event xml file; or the event name (e.g. S190814bv-5-Update)"
                              " to download from GraceDB")
     parser.add_argument("-c", "--config", metavar="config_file", help="""path to config.ini file (default: config.ini).
@@ -26,7 +26,7 @@ def usage():
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "e:p:c:h", ["event=", "path=", "config=", "help"])
+        opts, args = getopt.getopt(argv, "ec:h", ["event", "config=", "help"])
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -36,15 +36,6 @@ def main(argv):
         if opt in ("-h", "--help"):
             usage()
             sys.exit(2)
-        elif opt in ("-e", "--event"):
-            if os.path.isfile(arg):  # local file
-                payload = open(arg, 'rb').read()
-            else:  # download event
-                base_url = "https://gracedb.ligo.org/apiweb/superevents/"
-                event = arg.split("-")[0]
-                url = base_url + event + "/files/" + arg + ".xml"
-                r = requests.get(url)
-                payload = r.content
         elif opt in ("-c", "--config"):
             try:
                 print("Copying the config file to the current folder.")
@@ -53,7 +44,16 @@ def main(argv):
                 print(err)
                 print("Didn't copy config.ini.")
 
-    # Listen for GCN notices (until interrupted or killed)
+    # Ingest alert
+    event_name = args[-1]
+    if os.path.isfile(event_name):  # local file
+        payload = open(event_name, 'rb').read()
+    else:  # download event
+        base_url = "https://gracedb.ligo.org/apiweb/superevents/"
+        event = event_name.split("-")[0]
+        url = base_url + event + "/files/" + event_name + ".xml"
+        r = requests.get(url)
+        payload = r.content
     root = lxml.etree.fromstring(payload)
     process_gcn(payload, root)
 
