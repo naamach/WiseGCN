@@ -22,6 +22,9 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
         ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
         dec_event.to_string(sep=':', precision=2, alwayssign=True, pad=True)))
 
+    eventname = alertname.split('#')[1]
+    eventname = eventname.split('-')[0]
+
     t = Time.now()
     if not is_night(lat=config.getfloat('WISE', 'LAT')*u.deg,
                     lon=config.getfloat('WISE', 'LON')*u.deg,
@@ -130,7 +133,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
-            send_mail(subject=f"[GW@Wise] {alertname} Nothing to observe",
+            send_mail(subject=f"[GW@Wise] {eventname} {telescopes[tel]} observing plan",
                       text="Nothing to observe for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
@@ -143,7 +146,7 @@ def process_galaxy_list(galaxies, alertname='GW', ra_event=None, dec_event=None,
             fid.close()
 
             log.info(f"Created observing plan for alert {alertname}.")
-            send_mail(subject=f"[GW@Wise] {alertname} {telescopes[tel]} observing plan",
+            send_mail(subject=f"[GW@Wise] {eventname} {telescopes[tel]} observing plan",
                       text="{} observing plan for alert {}.\nEvent most probable at RA={}, Dec={}."
                       .format(telescopes[tel], alertname,
                               ra_event.to_string(unit=u.hourangle, sep=':', precision=2, pad=True),
@@ -168,6 +171,9 @@ def process_tiles(skymap_path, alertname='GW', log=None):
     if log is None:
         log = logging.getLogger(__name__)
 
+    eventname = alertname.split('#')[1]
+    eventname = eventname.split('-')[0]
+
     t = Time.now()
     if not is_night(lat=config.getfloat('WISE', 'LAT')*u.deg,
                     lon=config.getfloat('WISE', 'LON')*u.deg,
@@ -190,7 +196,7 @@ def process_tiles(skymap_path, alertname='GW', log=None):
                              sun_alt_twilight=config.getfloat('OBSERVING', 'SUN_ALT_MAX')*u.deg)
     log.debug("Now/sunset = {}, sunrise = {}".format(t, t_sunrise))
 
-    telescopes = config.get('WISE', 'TELESCOPES').split(',')
+    telescopes = config.get('WISE', 'TELESCOPES').split(', ')
 
     # change IERS table URL (to fix URL timeout problems)
     change_iers_url(url=config.get('IERS', 'URL'))
@@ -271,7 +277,7 @@ def process_tiles(skymap_path, alertname='GW', log=None):
 
         if nothing_to_observe:
             log.info("Nothing to observe.")
-            send_mail(subject=f"[GW@Wise] {alertname} Nothing to observe",
+            send_mail(subject=f"[GW@Wise] {eventname} {telescopes[tel]} observing plan",
                       text=f"Nothing to observe for alert {alertname}.")
 
         else:
@@ -281,7 +287,7 @@ def process_tiles(skymap_path, alertname='GW', log=None):
             fid.close()
 
             log.info(f"Created observing plan for alert {alertname}.")
-            send_mail(subject=f"[GW@Wise] {alertname} {telescopes[tel]} observing plan",
+            send_mail(subject=f"[GW@Wise] {eventname} {telescopes[tel]} observing plan",
                       text="{} observing plan for alert {}."
                       .format(telescopes[tel], alertname),
                       files=[rtml_filename, csv_filename])

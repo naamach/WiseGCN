@@ -3,7 +3,7 @@ from astropy.utils.data import download_file
 from astropy.io import ascii
 import shutil
 import ntpath
-from wisegcn.email_alert import send_mail, format_alert
+from wisegcn.email_alert import send_mail, format_alert, format_html
 from wisegcn import galaxy_list
 from wisegcn import wise
 from wisegcn import mysql_update
@@ -88,8 +88,9 @@ def process_gcn(payload, root):
         with open(alerts_path + filename + '.xml', "wb") as f:
             f.write(payload)
         log.info("Event {} retracted, doing nothing.".format(filename))
-        send_mail(subject="[GW@Wise] {} GCN/LVC event retracted".format(filename),
-                  text="Attached GCN/LVC retraction {} received, doing nothing.".format(filename),
+        send_mail(subject="[GW@Wise] {}".format(filename.split('-')[0]),
+                  text="GCN/LVC retraction {} received, doing nothing.".format(filename),
+                  html=format_html("<b>Alert retracted.</b><br>"),
                   files=[alerts_path + filename + '.xml'])
         return
 
@@ -158,7 +159,7 @@ def process_gcn(payload, root):
     area = get_sky_area(skymap_path, credzone=credzones)
     if area[2] > config.getfloat("GENERAL", "AREA_MAX"):
         log.info(f"""{credzones[2]} area is {area[2]} > {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""")
-        send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+        send_mail(subject="[GW@Wise] {}".format(params["GraceID"]),
                   text=f"""Attached {filename} GCN/LVC alert received, but {credzones[2]} area is {area[2]} > \
                           {config.get("GENERAL", "AREA_MAX")} deg^2, aborting.""",
                   html=format_alert(params, area[0:1]),
@@ -167,7 +168,7 @@ def process_gcn(payload, root):
         return
 
     # Send alert email
-    send_mail(subject="[GW@Wise] {} GCN/LVC alert received".format(params["GraceID"]),
+    send_mail(subject="[GW@Wise] {}".format(params["GraceID"]),
               text="Attached {} GCN/LVC alert received, started processing.".format(filename),
               html=format_alert(params, area[0:2]),
               files=[alerts_path+filename+'.xml'],
@@ -179,7 +180,7 @@ def process_gcn(payload, root):
         # Save galaxy list to csv file and send it
         ascii.write(galaxies, "galaxy_list.csv", format="csv", overwrite=True,
                     names=["GladeID", "RA", "Dec", "Dist", "Bmag", "Score", "Distance factor"])
-        send_mail(subject="[GW@Wise] {} GCN/LVC alert galaxy list".format(params["GraceID"]),
+        send_mail(subject="[GW@Wise] {} Galaxy list".format(params["GraceID"]),
                   text="{} GCN/LVC alert galaxy list is attached.".format(filename),
                   files=["galaxy_list.csv"],
                   log=log)

@@ -60,20 +60,32 @@ def send_mail(subject, text, html="",
     return
 
 
-def format_html(text, img, img_width=300):
-    html = f"""\
-    <html>
-      <head></head>
-      <body>
-        <p>
-            {text}
-        </p>
-        <p>
-            <img src="{img}" width="{img_width}" border="0">
-        </p>
-      </body>
-    </html>
-    """
+def format_html(text, img=None, img_width=300):
+    if img is not None:
+        html = f"""\
+        <html>
+          <head></head>
+          <body>
+            <p>
+                {text}
+            </p>
+            <p>
+                <img src="{img}" width="{img_width}" border="0">
+            </p>
+          </body>
+        </html>
+        """
+    else:
+        html = f"""\
+        <html>
+          <head></head>
+          <body>
+            <p>
+                {text}
+            </p>
+          </body>
+        </html>
+        """
 
     return html
 
