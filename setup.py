@@ -11,7 +11,7 @@ setup(name='wisegcn',
       license='LICENSE.txt',
       packages=setuptools.find_packages(),
       install_requires=['pygcn', 'healpy', 'configparser', 'astropy', 'pymysql', 'voevent-parse', 'numpy', 'scipy',
-                        'requests', 'lxml'],
+                        'requests', 'lxml', 'ccdproc'],
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

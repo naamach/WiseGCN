@@ -16,7 +16,7 @@ Create and activate a `conda` environment (named `gw`) with the necessary module
 ```
 $ conda create -p /path/to/gw python=3.7.1
 $ source activate /path/to/gw
-$ pip install pygcn healpy configparser voevent-parse pymysql lxml
+$ pip install pygcn healpy configparser voevent-parse pymysql lxml ccdproc
 $ pip install git+https://github.com/naamach/schedulertml.git
 $ pip install git+https://github.com/naamach/wisegcn.git
 ```
@@ -114,6 +114,7 @@ ALT = 875
 UTC_OFFSET = -2
 TELESCOPES = C28  ; C28, C18, 1m
 PATH = /path/to/plans/
+OBS_PATH = /path/to/observed_fits_images
 
 [C28]
 FOV = 1  ; [deg^2] FLI field of view
@@ -129,6 +130,7 @@ HOST = c28_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
+OBS_DIR = C28backup
 
 [C18]
 FOV = 1  ; [deg^2] SBIG field of view
@@ -144,6 +146,7 @@ HOST = c18_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
+OBS_DIR = C18backup
 
 [1m]
 FOV = 0.2158  ; [deg^2] PI field of view
@@ -159,11 +162,16 @@ HOST = 1m_computer_name ; leave blank to skip plan upload to remote host
 USER = username
 CYGWIN_PATH = C:\cygwin64\home\username\
 PATH = /home/username/
+OBS_DIR = 
 
 [IERS]
 URL = ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all ; IERS table URL (default is: http://maia.usno.navy.mil/ser7/finals2000A.all)
 ```
 
+[TREASUREMAP]
+BASE = http://treasuremap.space/api/v0/
+TARGET = pointings
+APITOKEN = 
 NOTE: To find the `mysql` socket, run:
 ```
 $ netstat -ln | grep mysql
