@@ -11,7 +11,7 @@ config.read("config.ini")
 
 
 def get_nightly_image_list(date, telescope="C28"):
-    path = os.path.join(config.get("WISE", "OBS_PATH"), config.get(telescope, "OBS_PATH"))
+    path = os.path.join(config.get("WISE", "OBS_PATH"), config.get(telescope, "OBS_DIR"))
     if telescope == "C28":
         path = os.path.join(path, date + "c28")
     elif telescope == "C18":
