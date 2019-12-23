@@ -166,12 +166,13 @@ OBS_DIR =
 
 [IERS]
 URL = ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all ; IERS table URL (default is: http://maia.usno.navy.mil/ser7/finals2000A.all)
-```
 
 [TREASUREMAP]
 BASE = http://treasuremap.space/api/v0/
 TARGET = pointings
 APITOKEN = 
+```
+
 NOTE: To find the `mysql` socket, run:
 ```
 $ netstat -ln | grep mysql
@@ -299,6 +300,19 @@ credzone = [0.5, 0.9]  # localization probability to consider credible (could be
 skymap = "/path/to/bayestar.fits.gz"
 area = get_sky_area(skymap, credzone)  # [deg^2]
 ```
+
+### Submit telescope pointings to Treasure Map
+
+The [Gravitational Wave Treasure Map](http://treasuremap.space/) is designed to help coordinate electromagnetic followup of gravitational-wave events. After observing, you can upload to the Treasure Map the telescope pointings observed for, e.g., the LIGO event S191216ap on 2019 December 17 by running:
+
+```
+from wisegcn.treasuremap import submit_nightly_pointings
+
+submit_nightly_pointings("20191217", "S191216ap")
+```
+
+NOTE: This should be run from a computer that has access to the FITS images, located at `WISE/OBS_PATH` (as defined in the `config.ini` file).
+Also, make sure to fill-in the `TREASUREMAP/APITOKEN` keyword in the `config.ini` file with your Treasure Map API token (found under your `Profile` page on the [Treasure Map website](http://treasuremap.space/manage_user)).
 
 ## Acknowledgments
 Leo P. Singer, Scott Barthelmy, David Guevel, Michael Zalzman, Sergiy Vasylyev.
