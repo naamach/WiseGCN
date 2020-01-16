@@ -89,6 +89,8 @@ def submit_nightly_pointings(date, graceid, api_token=config.get("TREASUREMAP", 
     ra, dec, t = get_observed_target_list(date, telescope)
     if telescope == "C28":
         instrumentid = 57
+    elif telescope == "C18":
+        instrumentid = 58
 
     json_data = prepare_json_data(graceid, api_token, ra, dec, t,
                                   band, instrumentid, depth, depth_unit,

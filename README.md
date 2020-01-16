@@ -300,15 +300,17 @@ credzone = [0.5, 0.9]  # localization probability to consider credible (could be
 skymap = "/path/to/bayestar.fits.gz"
 area = get_sky_area(skymap, credzone)  # [deg^2]
 ```
+## Gravitational Wave Treasure Map
+The [Gravitational Wave Treasure Map](http://treasuremap.space/) is designed to help coordinate electromagnetic followup of gravitational-wave events.
 
 ### Submit telescope pointings to Treasure Map
 
-The [Gravitational Wave Treasure Map](http://treasuremap.space/) is designed to help coordinate electromagnetic followup of gravitational-wave events. After observing, you can upload to the Treasure Map the telescope pointings observed for, e.g., the LIGO event S191216ap on 2019 December 17 by running:
+After observing, you can upload to the Treasure Map the C28 telescope pointings observed for, e.g., the LIGO event S191216ap on 2019 December 17 by running:
 
 ```
 from wisegcn.treasuremap import submit_nightly_pointings
 
-submit_nightly_pointings("20191217", "S191216ap")
+submit_nightly_pointings("20191217", "S191216ap", telescope="C28")
 ```
 
 NOTE: This should be run from a computer that has access to the FITS images, located at `WISE/OBS_PATH` (as defined in the `config.ini` file).
