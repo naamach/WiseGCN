@@ -81,11 +81,18 @@ def post(json_data, base="http://treasuremap.space/api/v0/", target="pointings")
     print(r.text)
 
 
-def submit_nightly_pointings(date, graceid, api_token=config.get("TREASUREMAP", "APITOKEN"),
+def submit_nightly_pointings(date, graceid, api_token=None,
                              telescope="C28", instrumentid=57,
                              band="other", depth=21, depth_unit="ab_mag",
                              pos_angle=0, status="completed",
-                             base=config.get("TREASUREMAP", "BASE"), target=config.get("TREASUREMAP", "TARGET")):
+                             base=None, target=None):
+    if api_token is None:
+        api_token = config.get("TREASUREMAP", "APITOKEN")
+    if base is None:
+        base = config.get("TREASUREMAP", "BASE")
+    if target is None:
+        target = config.get("TREASUREMAP", "TARGET")
+
     ra, dec, t = get_observed_target_list(date, telescope)
     if telescope == "C28":
         instrumentid = 57
